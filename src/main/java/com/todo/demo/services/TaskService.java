@@ -1,7 +1,7 @@
 package com.todo.demo.services;
 
 import com.todo.demo.interfaces.TaskRepository;
-import com.todo.demo.model.Task;
+import com.todo.demo.model.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,18 +28,18 @@ public class TaskService {
 
     ) {
         if(taskRepository.findByName(title).isEmpty()){
-            Task task = new Task();
-            task.setTitle(title);
-            task.setDescription(description);
-            task.setPriority(priority);
-            task.setStatus("CREATED");
-            task.setAssignee(assignee);
-            task.setAuthor(author);
-            task.setDateCreated(LocalDate.now());
-            task.setDateUpdated(LocalDate.now());
-            task.setDeadline(deadline);
+            TaskEntity taskEntity = new TaskEntity();
+            taskEntity.setTitle(title);
+            taskEntity.setDescription(description);
+            taskEntity.setPriority(priority);
+            taskEntity.setStatus("CREATED");
+            taskEntity.setAssignee(assignee);
+            taskEntity.setAuthor(author);
+            taskEntity.setDateCreated(LocalDate.now());
+            taskEntity.setDateUpdated(LocalDate.now());
+            taskEntity.setDeadline(deadline);
 
-            taskRepository.save(task);
+            taskRepository.save(taskEntity);
         }
         else {
             throw new TaskExeption("Task already exists");

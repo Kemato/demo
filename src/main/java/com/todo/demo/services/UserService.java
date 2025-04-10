@@ -1,7 +1,9 @@
 package com.todo.demo.services;
 
 import com.todo.demo.interfaces.UserRepository;
-import com.todo.demo.model.User;
+import com.todo.demo.model.UserDTO;
+import com.todo.demo.model.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,30 +16,31 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(String username, String password){
+    public UserEntity createUser(String username, String password){
         if(username == null || username.trim().isEmpty()){
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
         if(password == null || password.trim().isEmpty()){
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
-        Optional <User> existingUser = userRepository.findByName(username);
+        Optional <UserEntity> existingUser = userRepository.findByName(username);
         if(existingUser.isPresent()){
             throw new IllegalArgumentException("User with name "+ username +" already exists");
         }
-        User user = new User();
-        user.setName(username);
-        user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(username);
+        userDTO.setPassword(passwordEncoder.encode(password));
+        userRepository.save(userDTO);
         return userRepository.findByName(username).orElse(null);
     }
 
-    public Optional<User> readUserByUsername(String username){
+    public Optional<UserEntity> readUserByUsername(String username){
         try {
             return userRepository.findByName(username);
         }
@@ -46,24 +49,39 @@ public class UserService {
         }
     }
 
-    public User updateUser(User user){
+
+    public UserEntity updateUserPassword(UserEntity userEntity, String newPassword){
         try {
-            if (user.getId() == null || !userRepository.existsById(user.getId())) {
+            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
                 throw new IllegalArgumentException("User not found ");
             }
-            return userRepository.save(user);
+            userEntity.setPassword(passwordEncoder.encode(newPassword));
+            return userRepository.save(userEntity);
         }
         catch (DataAccessException e){
             throw new RuntimeException("Could not update user "+ e.getMessage(), e);
         }
     }
 
-    public boolean deleteUser(User user){
+    public UserEntity updateUserName(UserEntity userEntity, String username){
         try {
-            if (user.getId() == null || !userRepository.existsById(user.getId())) {
+            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
+                throw new IllegalArgumentException("User not found ");
+            }
+            userEntity.setName(username);
+            return userRepository.save(userEntity);
+        }
+        catch (DataAccessException e){
+            throw new RuntimeException("Could not update user "+ e.getMessage(), e);
+        }
+    }
+
+    public boolean deleteUser(UserEntity userEntity){
+        try {
+            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
                 throw new IllegalArgumentException("User not found");
             } else {
-                userRepository.deleteById(user.getId());
+                userRepository.deleteById(userEntity.getId());
                 return true;
             }
         }
@@ -87,21 +105,21 @@ public class UserService {
         }
     }
 
-    public ArrayList <User> readAllUsers(){
+    public ArrayList <UserEntity> readAllUsers(){
         try{
-            ArrayList<User> users = new ArrayList<>();
-            userRepository.findAll().forEach(users::add);
-            if(users.isEmpty()){
+            ArrayList<UserEntity> userEntities = new ArrayList<>();
+            userRepository.findAll().forEach(userEntities::add);
+            if(userEntities.isEmpty()){
                 throw new IllegalArgumentException("No users found");
             }
-            return users;
+            return userEntities;
         }
         catch (DataAccessException ex){
             throw new RuntimeException("Error while finding users " + ex.getMessage(), ex);
         }
     }
 
-    public User readUser(Long id){
+    public UserEntity readUser(Long id){
         try{
             return userRepository.findById(id).orElse(null);
         }

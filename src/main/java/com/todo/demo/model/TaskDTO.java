@@ -9,8 +9,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task {
-    long id;
+public class TaskDTO {
     String title;
     String description;
     String status;
