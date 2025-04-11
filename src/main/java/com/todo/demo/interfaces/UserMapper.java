@@ -1,10 +1,10 @@
 package com.todo.demo.interfaces;
 
 
-import com.todo.demo.model.UserCreateDTO;
-import com.todo.demo.model.UserDTO;
-import com.todo.demo.model.UserEntity;
-import com.todo.demo.model.UserUpdateDTO;
+import com.todo.demo.model.dto.UserCreateDTO;
+import com.todo.demo.model.dto.UserDTO;
+import com.todo.demo.model.entity.UserEntity;
+import com.todo.demo.model.dto.UserUpdateDTO;
 import org.mapstruct.*;
 
 @Mapper(

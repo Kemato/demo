@@ -1,14 +1,13 @@
-package com.todo.demo.model;
+package com.todo.demo.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
-    private Long id;
+@AllArgsConstructor
+public class UserDTO {
     private String name;
     private String password;
 }

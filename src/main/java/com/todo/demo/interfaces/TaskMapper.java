@@ -1,9 +1,9 @@
 package com.todo.demo.interfaces;
 
-import com.todo.demo.model.TaskCreateDTO;
-import com.todo.demo.model.TaskDTO;
-import com.todo.demo.model.TaskEntity;
-import com.todo.demo.model.TaskUpdateDTO;
+import com.todo.demo.model.dto.TaskCreateDTO;
+import com.todo.demo.model.dto.TaskDTO;
+import com.todo.demo.model.entity.TaskEntity;
+import com.todo.demo.model.dto.TaskUpdateDTO;
 import org.mapstruct.*;
 
 @Mapper(

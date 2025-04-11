@@ -1,6 +1,6 @@
 package com.todo.demo.interfaces;
 
-import com.todo.demo.model.TaskEntity;
+import com.todo.demo.model.entity.TaskEntity;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 

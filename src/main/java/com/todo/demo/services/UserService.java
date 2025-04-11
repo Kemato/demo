@@ -1,8 +1,11 @@
 package com.todo.demo.services;
 
+import com.todo.demo.interfaces.UserMapper;
 import com.todo.demo.interfaces.UserRepository;
-import com.todo.demo.model.UserDTO;
-import com.todo.demo.model.UserEntity;
+import com.todo.demo.model.dto.UserCreateDTO;
+import com.todo.demo.model.dto.UserDTO;
+import com.todo.demo.model.dto.UserUpdateDTO;
+import com.todo.demo.model.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,11 +18,13 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     public UserEntity createUser(String username, String password){
@@ -33,10 +38,10 @@ public class UserService {
         if(existingUser.isPresent()){
             throw new IllegalArgumentException("User with name "+ username +" already exists");
         }
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(username);
-        userDTO.setPassword(passwordEncoder.encode(password));
-        userRepository.save(userDTO);
+        UserCreateDTO userCreateDTO = new UserCreateDTO();
+        userCreateDTO.setName(username);
+        userCreateDTO.setPassword(passwordEncoder.encode(password));
+        userRepository.save(userMapper.map(userCreateDTO));
         return userRepository.findByName(username).orElse(null);
     }
 
@@ -49,10 +54,9 @@ public class UserService {
         }
     }
 
-
-    public UserEntity updateUserPassword(UserEntity userEntity, String newPassword){
+    public UserEntity updateUser(UserUpdateDTO userUpdateDTO){
         try {
-            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
+            if (userUpdateDTO.getId() == null || !userRepository.existsById(userEntity.getId())) {
                 throw new IllegalArgumentException("User not found ");
             }
             userEntity.setPassword(passwordEncoder.encode(newPassword));
@@ -63,18 +67,31 @@ public class UserService {
         }
     }
 
-    public UserEntity updateUserName(UserEntity userEntity, String username){
-        try {
-            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
-                throw new IllegalArgumentException("User not found ");
-            }
-            userEntity.setName(username);
-            return userRepository.save(userEntity);
-        }
-        catch (DataAccessException e){
-            throw new RuntimeException("Could not update user "+ e.getMessage(), e);
-        }
-    }
+//    public UserEntity updateUserPassword(UserEntity userEntity, String newPassword){
+//        try {
+//            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
+//                throw new IllegalArgumentException("User not found ");
+//            }
+//            userEntity.setPassword(passwordEncoder.encode(newPassword));
+//            return userRepository.save(userEntity);
+//        }
+//        catch (DataAccessException e){
+//            throw new RuntimeException("Could not update user "+ e.getMessage(), e);
+//        }
+//    }
+//
+//    public UserEntity updateUserName(UserEntity userEntity, String username){
+//        try {
+//            if (userEntity.getId() == null || !userRepository.existsById(userEntity.getId())) {
+//                throw new IllegalArgumentException("User not found ");
+//            }
+//            userEntity.setName(username);
+//            return userRepository.save(userEntity);
+//        }
+//        catch (DataAccessException e){
+//            throw new RuntimeException("Could not update user "+ e.getMessage(), e);
+//        }
+//    }
 
     public boolean deleteUser(UserEntity userEntity){
         try {
