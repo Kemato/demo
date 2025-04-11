@@ -4,17 +4,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class TaskCreateDTO {
-    String title;
-    String description;
-    String status;
-    String priority;
-    String assignee;
-    String author;
-    LocalDate deadline;
+    @NotBlank
+    private String title;
+    @NotBlank
+    private String description;
+    @NotBlank
+    private String status;
+    @NotBlank
+    private String priority;
+    @NotBlank
+    private String assignee;
+    @NotBlank
+    private String author;
+    @NotNull
+    @FutureOrPresent
+    private LocalDate deadline;
 }

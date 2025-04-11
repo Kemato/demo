@@ -4,17 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskUpdateDTO {
-        String title;
-        String description;
-        String status;
-        String priority;
-        String assignee;
-        LocalDate deadline;
-        LocalDate dateFinished;
+        @NotNull
+        private Long id;
+        private Optional <String> title = Optional.empty();
+        private Optional <String> description = Optional.empty();
+        private Optional <String> status = Optional.empty();
+        private Optional <String> priority = Optional.empty();
+        private Optional <String> assignee = Optional.empty();
+        private Optional <LocalDate> deadline = Optional.empty();
+        private Optional <LocalDate> dateFinished = Optional.empty();
 }
