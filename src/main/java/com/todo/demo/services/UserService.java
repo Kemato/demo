@@ -114,14 +114,14 @@ public class UserService {
         }
     }
 
-    public ArrayList <UserEntity> readAllUsers(){
+    public ArrayList <UserDTO> readAllUsers(){
         try{
-            ArrayList<UserEntity> userEntities = new ArrayList<>();
-            userRepository.findAll().forEach(userEntities::add);
-            if(userEntities.isEmpty()){
+            ArrayList<UserDTO> userDTOArrayList = new ArrayList<>();
+            userRepository.findAll().forEach(userEntity -> userDTOArrayList.add(userMapper.toDTO(userEntity)));
+            if(userDTOArrayList.isEmpty()){
                 throw new IllegalArgumentException("No users found");
             }
-            return userEntities;
+            return userDTOArrayList;
         }
         catch (DataAccessException ex){
             throw new RuntimeException("Error while finding users " + ex.getMessage(), ex);
@@ -143,6 +143,19 @@ public class UserService {
         }
         catch (DataAccessException ex){
             throw new RuntimeException("Error while finding user " + ex.getMessage(), ex);
+        }
+    }
+
+    public boolean checkPassword(@NotNull String password, @NotNull Long id){
+        try{
+            Optional <UserEntity> userEntity = userRepository.findById(id);
+            if(userEntity.isEmpty())throw new IllegalArgumentException("User with id " + id + " does not exist");
+            String oldPassword = userEntity.get().getPassword();
+            return passwordEncoder.encode(password).equals(oldPassword);
+
+        }
+        catch (DataAccessException ex){
+            throw new RuntimeException("Error while checking password " + ex.getMessage(), ex);
         }
     }
 }

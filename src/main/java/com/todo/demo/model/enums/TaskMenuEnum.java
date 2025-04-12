@@ -1,6 +1,6 @@
 package com.todo.demo.model.enums;
 
-public enum TaskMenu {
+public enum TaskMenuEnum {
     CREATE,
     READ,
     UPDATE,

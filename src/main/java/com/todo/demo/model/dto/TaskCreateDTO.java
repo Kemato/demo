@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TaskCreateDTO {
     @NotBlank
     private String title;

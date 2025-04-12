@@ -1,5 +1,6 @@
 package com.todo.demo.model.enums;
 
+
 public enum UserMenuEnum {
     CREATE,
     READ,
@@ -7,3 +8,4 @@ public enum UserMenuEnum {
     DELETE,
     BACK
 }
+

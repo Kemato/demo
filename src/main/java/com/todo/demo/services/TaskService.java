@@ -2,15 +2,12 @@ package com.todo.demo.services;
 
 import com.todo.demo.interfaces.TaskMapper;
 import com.todo.demo.interfaces.TaskRepository;
-import com.todo.demo.interfaces.UserMapper;
-import com.todo.demo.interfaces.UserRepository;
 import com.todo.demo.model.dto.TaskCreateDTO;
 import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.dto.TaskUpdateDTO;
 import com.todo.demo.model.entity.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 
@@ -22,13 +19,10 @@ import java.util.Optional;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
-    private final UserRepository userRepository;
 
-    @Autowired
-    public TaskService(TaskRepository repository, TaskMapper taskMapper, UserRepository userRepository) {
+    public TaskService(TaskRepository repository, TaskMapper taskMapper) {
         this.taskRepository = repository;
         this.taskMapper = taskMapper;
-        this.userRepository = userRepository;
     }
 
     public TaskDTO createTask(@NotNull TaskCreateDTO taskCreateDTO) {
@@ -78,7 +72,7 @@ public class TaskService {
     public ArrayList<TaskDTO> readAllTasks() {
         try{
             ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
-            taskRepository.findAll().forEach(taskDTO -> taskDTOArrayList.add(taskMapper.toDTO(taskDTO)));
+            taskRepository.findAll().forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
             if(taskDTOArrayList.isEmpty()){
                 throw new IllegalArgumentException("No tasks found");
             }
@@ -125,17 +119,16 @@ public class TaskService {
             return taskRepository.existsById(id);
         }
         catch(DataAccessException ex){
-            throw new RuntimeException("Could not check if task exists" + ex.getMessage(), ex);
+            return false;
         }
     }
 
     public boolean existTask(@NotNull String title) {
         try {
             return taskRepository.existsByName(title);
-
         }
         catch(DataAccessException ex){
-            throw new RuntimeException("Could not find task with title " + ex.getMessage(), ex);
+            return false;
         }
     }
 }
