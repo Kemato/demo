@@ -27,7 +27,7 @@ public class TaskService {
 
     public TaskDTO createTask(@NotNull TaskCreateDTO taskCreateDTO) {
         try{
-            Optional <TaskEntity> exitingTask = taskRepository.findByName(taskCreateDTO.getTitle());
+            Optional <TaskEntity> exitingTask = taskRepository.findByTitle(taskCreateDTO.getTitle());
             if (exitingTask.isPresent()) {
                 throw new IllegalArgumentException("Task already exists");
             }
@@ -56,7 +56,7 @@ public class TaskService {
 
     public TaskDTO readTask(@NotNull String title) {
         try{
-            Optional<TaskEntity> exitingTask = taskRepository.findByName(title);
+            Optional<TaskEntity> exitingTask = taskRepository.findByTitle(title);
             if (exitingTask.isPresent()) {
                 return taskMapper.toDTO(exitingTask.get());
             }
@@ -129,6 +129,28 @@ public class TaskService {
         }
         catch(DataAccessException ex){
             return false;
+        }
+    }
+
+    public ArrayList<TaskDTO> readAllTaskByUser(@NotNull Long userId) {
+        try{
+            ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
+            taskRepository.findAllByAssigned(userId).forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
+            return taskDTOArrayList;
+        }
+        catch(DataAccessException ex){
+            throw new RuntimeException("Error reading all tasks"+ ex.getMessage(), ex);
+        }
+    }
+
+    public ArrayList<TaskDTO> readAllTaskByAuthor(@NotNull Long userId) {
+        try{
+            ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
+            taskRepository.findAllByAuthor(userId).forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
+            return taskDTOArrayList;
+        }
+        catch(DataAccessException ex){
+            throw new RuntimeException("Error reading all tasks" + ex.getMessage(), ex);
         }
     }
 }

@@ -18,7 +18,7 @@ public class TaskUpdateDTO {
         private Optional <String> description = Optional.empty();
         private Optional <String> status = Optional.empty();
         private Optional <String> priority = Optional.empty();
-        private Optional <String> assignee = Optional.empty();
+        private Optional <String> assigned = Optional.empty();
         private Optional <LocalDate> deadline = Optional.empty();
         private Optional <LocalDate> dateFinished = Optional.empty();
 }

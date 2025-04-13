@@ -1,6 +1,6 @@
 package com.todo.demo.model.enums;
 
-public enum TaskStatus {
+public enum TaskStatusEnum {
     /*
     CREATED,
     WAITINGFORACTIVATION,

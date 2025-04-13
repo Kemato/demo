@@ -35,7 +35,7 @@ public class MainMenu {
                             userMenu.userMenu(userDTO);
                             break;
                         case TASK_MENU:
-                            taskMenu(userDTO);
+                            taskMenu.taskMenu(userDTO);
                             break;
                         case LOG_OUT:
                             return;

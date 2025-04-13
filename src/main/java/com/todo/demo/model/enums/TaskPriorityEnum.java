@@ -1,6 +1,6 @@
 package com.todo.demo.model.enums;
 
-public enum TaskPriority {
+public enum TaskPriorityEnum {
     HIGHEST,
     HIGHT,
     MEDIUM,

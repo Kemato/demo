@@ -9,12 +9,9 @@ import com.todo.demo.services.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 import static com.todo.demo.component.Choise.choiceAssegned;
@@ -34,10 +31,16 @@ public class TaskMenu {
     public void taskMenu(UserDTO user) {
         Scanner scanner = new Scanner(System.in);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        ArrayList<TaskDTO> tasks = taskService.readAllTasks();
-        String name, description, priority, choice, assegned;
+        ArrayList<TaskDTO> allTasksByUser = taskService.readAllTaskByUser(user.getId());
+        ArrayList<TaskDTO> allTasks = taskService.readAllTasks();
+        String choice;
         while (true) {
-            for (TaskMenuEnum taskMenuEnum : TaskMenuEnum.values()) System.out.println(taskMenuEnum);
+            if(allTasks.isEmpty()) {
+                System.out.println(TaskMenuEnum.CREATE);
+            }
+            else {
+                for (TaskMenuEnum taskMenuEnum : TaskMenuEnum.values()) System.out.println(taskMenuEnum);
+            }
             choice = scanner.nextLine();
             for (TaskMenuEnum taskMenuEnum : TaskMenuEnum.values()) {
                 if (taskMenuEnum.toString().equalsIgnoreCase(choice)) {
@@ -66,55 +69,56 @@ public class TaskMenu {
                             break;
 
                         case READ:
-                            if (tasks.isEmpty()) {
+                            if (allTasks.isEmpty()) {
                                 System.out.println("There are no tasks.");
                                 break;
                             }
-                            System.out.println(
-                                    "Введите id(1-" +
-                                            tasks.size() +
-                                            ")задания, если хотите вывести весь список, введите '-'."
-                            );
+                            System.out.println("1:Все задачи.");
+                            System.out.println("2:Только мои задачи.");
                             String input = scanner.nextLine();
-                            if (input.equals("-")) {
-                                for (Task task : tasks) {
+                            if (input.equals("1")) {
+                                for (TaskDTO task : allTasks) {
                                     printTask(task);
                                 }
-                            } else if (Integer.parseInt(input) > 0 && Integer.parseInt(input) < tasks.size() - 1) {
-                                printTask(taskService.readTask(Integer.parseInt(input) - 1));
+                            } else if (input.equals("2")) {
+                                for (TaskDTO task : allTasksByUser) {
+                                    printTask(task);
+                                }
+                            }
+                            else{
+                                System.out.println("Некорректный ввод");
                             }
                             System.out.println("Введите любой символ чтобы продолжить...");
                             scanner.nextLine();
                             break;
                         case UPDATE:
-                            if (tasks.isEmpty()) {
-                                System.out.println("There are no tasks.");
+                            ArrayList<TaskDTO> taskDtoArrayWhereAuthor = taskService.readAllTaskByAuthor(user.getId());
+                            if (taskDtoArrayWhereAuthor.isEmpty()) {
+                                System.out.println("You have no tasks that you can update.");
                                 break;
                             }
-                            System.out.println("Введите порядковый номер задания, которое вы хотите исправить");
-                            for (Task task : tasks) {
-                                System.out.println(task.getName());
-                                System.out.println(task.getDescription());
-                                System.out.println("id: " + (task.getId() + 1));
-                                System.out.println();
+                            System.out.println("Введите порядковый номер задания, которое вы хотите обновить");
+                            for (int i = 0; i < taskDtoArrayWhereAuthor.size(); i++) {
+                                System.out.println(i+1 + ":");
+                                printTask(taskDtoArrayWhereAuthor.get(i));
                             }
                             while (true) {
                                 choice = scanner.nextLine();
-                                if (Integer.parseInt(choice) <= tasks.size() && Integer.parseInt(choice) > 0) {
+                                if (Long.parseLong(choice) <= taskDtoArrayWhereAuthor.size() && Long.parseLong(choice) > 0) {
                                     break;
                                 }
                                 System.out.println("Выберете существующее задание.");
                             }
-                            taskUpdateMenu(Integer.parseInt(choice) - 1, taskService);
+                            TaskUpdateMenu.taskUpdateMenu(Integer.parseInt(choice) - 1);
                             break;
 
                         case DELETE:
-                            if (tasks.isEmpty()) {
+                            if (allTasks.isEmpty()) {
                                 System.out.println("There are no tasks.");
                                 break;
                             }
                             System.out.println("Введите порядковый номер записи, которую вы хотите удалить.");
-                            int id = Integer.parseInt(scanner.nextLine());
+                            Long id = Long.parseLong(scanner.nextLine());
                             System.out.println("Вы уверены что хотите удалить эту запись?(Yes/No)");
                             System.out.println(taskService.readTask(id).getName());
 
@@ -136,11 +140,11 @@ public class TaskMenu {
         }
     }
 
-    public static void printTask(@NotNull Task task) {
-        System.out.println("Name: " + task.getName());
+    public void printTask(@NotNull TaskDTO task) {
+        System.out.println("Title: " + task.getTitle());
         System.out.println("Description: " + task.getDescription());
-        System.out.println("Author: " + task.getAuthor());
-        System.out.println("Assigned: " + task.getAssigned());
+        System.out.println("Author: " + userService.readUser(task.getAuthor()));
+        System.out.println("Assigned: " + userService.readUser(task.getAssignee()));
         System.out.println("Status: " + task.getStatus());
         System.out.println("Priority: " + task.getPriority());
         System.out.println("Date Created: " + task.getDateCreated());

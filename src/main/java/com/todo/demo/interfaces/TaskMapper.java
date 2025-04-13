@@ -26,7 +26,7 @@ public interface TaskMapper {
         taskUpdateDTO.getTitle().ifPresent(taskEntity::setTitle);
         taskUpdateDTO.getDescription().ifPresent(taskEntity::setDescription);
 
-        taskUpdateDTO.getAssignee().ifPresent(taskEntity::setAssignee);
+        taskUpdateDTO.getAssigned().ifPresent(taskEntity::setAssignee);
         taskUpdateDTO.getDeadline().ifPresent(taskEntity::setDeadline);
 
         taskUpdateDTO.getPriority().ifPresent(taskEntity::setPriority);

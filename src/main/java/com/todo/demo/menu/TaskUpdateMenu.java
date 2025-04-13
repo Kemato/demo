@@ -1,18 +1,38 @@
 package com.todo.demo.menu;
 
-import ru.todo.model.MenuUpdateTask;
-import ru.todo.model.TaskPriority;
-import ru.todo.model.TaskStatus;
-import ru.todo.service.TaskService;
 
+
+import com.todo.demo.model.dto.TaskUpdateDTO;
+import com.todo.demo.model.dto.UserDTO;
+import com.todo.demo.model.enums.MenuUpdateTask;
+import com.todo.demo.model.enums.TaskPriorityEnum;
+import com.todo.demo.model.enums.TaskStatusEnum;
+import com.todo.demo.services.TaskService;
+import com.todo.demo.services.UserService;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
 
-import static ru.todo.service.CapitalizeWords.capitalizeWords;
+import static com.todo.demo.component.Choise.capitalizeWords;
 
+@Component
 public class TaskUpdateMenu {
-    public static void taskUpdateMenu(int id, TaskService taskService) {
-        Scanner sc = new Scanner(System.in);
 
+    private final Scanner scanner = new Scanner(System.in);
+    private final TaskService taskService;
+    private final UserService userService;
+
+    public TaskUpdateMenu(TaskService taskService, UserService userService) {
+        this.taskService = taskService;
+        this.userService = userService;
+    }
+
+    public void taskUpdateMenu(Long id) {
+        TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
+        taskUpdateDTO.setId(id);
         boolean flag = true;
         String choice;
         while (flag) {
@@ -20,62 +40,74 @@ public class TaskUpdateMenu {
             for (MenuUpdateTask point : MenuUpdateTask.values()) {
                 System.out.println(capitalizeWords(point.toString().toLowerCase()));
             }
-            choice = sc.nextLine();
+            choice = scanner.nextLine();
             for (MenuUpdateTask point : MenuUpdateTask.values()) {
                 if (point.toString().equalsIgnoreCase(choice)) {
                     flag = false;
                     switch (point) {
-                        case NAME:
+                        case TITLE:
                             System.out.println("Введите новое имя:");
-                            String newName = sc.nextLine();
-                            if (taskService.changeTaskName(id, newName)) System.out.println("Изменения применены.");
-                            else System.out.println("Что-то пошло не так. ");
-                            return;
+                            String newTitle = scanner.nextLine();
+                            if(newTitle == null || newTitle.trim().isEmpty())
+                                throw new IllegalArgumentException("Title cannot be empty");
+                            taskUpdateDTO.setTitle(Optional.of(newTitle));
+                            break;
 
                         case DESCRIPTION:
                             System.out.println("Введите новое описание:");
-                            String newDescription = sc.nextLine();
-                            taskService.changeTaskDescription(id, newDescription);
-                            return;
+                            String newDescription = scanner.nextLine();
+                            if(newDescription == null || newDescription.trim().isEmpty())
+                                throw new IllegalArgumentException("Description cannot be empty");
+                            taskUpdateDTO.setDescription(Optional.of(newDescription));
+                            break;
 
                         case ASSIGNED:
+                            ArrayList <UserDTO> userArrayList = userService.readAllUsers();
                             System.out.println("Кому назначить:");
-                            //todo.. Нужно вывести текущих пользователей, и проверить соответствие введённого варианта
-                            String newAssigned = sc.nextLine();
-                            taskService.changeTaskName(id, newAssigned);
-                            return;
+                            for(UserDTO user : userArrayList)System.out.println(user.getName());
+                            while(true) {
+                                String newAssigned = scanner.nextLine();
+                                if(newAssigned.equalsIgnoreCase("back"))break;
+                                for (UserDTO user : userArrayList) {
+                                    if (user.getName().equals(newAssigned)) {
+                                        taskUpdateDTO.setAssigned(Optional.of(newAssigned));
+                                        break;
+                                    }
+                                }
+                                System.out.println("Некорректный ввод.");
+                                System.out.println("Введите имя существующего пользователя или 'back' для того чтобы вернуться.");
+                            }
+                            break;
 
                         case STATUS:
                             String newStatus = "";
-                            boolean flagStatus = true;
-                            while (flagStatus) {
-                                for (TaskStatus status : TaskStatus.values()) {
+                            while (true) {
+                                for (TaskStatusEnum status : TaskStatusEnum.values()) {
                                     System.out.println(capitalizeWords(status.toString().toLowerCase()));
                                 }
                                 System.out.println("Введите новый статус:");
-                                newStatus = sc.nextLine();
-                                for (TaskStatus status : TaskStatus.values()) {
+                                newStatus = scanner.nextLine();
+                                for (TaskStatusEnum status : TaskStatusEnum.values()) {
                                     if (status.toString().equalsIgnoreCase(newStatus)) {
                                         newStatus = status.toString();
-                                        flagStatus = false;
                                         break;
                                     }
                                 }
                                 System.out.println("Некорректный статус.");
                             }
                             taskService.changeTaskStatus(id, newStatus);
-                            return;
+                            break;
 
                         case PRIORITY:
                             String newPriority = "";
                             boolean flagPriority = true;
                             while (flagPriority) {
-                                for (TaskPriority priority : TaskPriority.values()) {
+                                for (TaskPriorityEnum priority : TaskPriorityEnum.values()) {
                                     System.out.println(capitalizeWords(priority.toString().toLowerCase()));
                                 }
                                 System.out.println("Введите приоритет:");
-                                newPriority = sc.nextLine();
-                                for (TaskPriority priority : TaskPriority.values()) {
+                                newPriority = scanner.nextLine();
+                                for (TaskPriorityEnum priority : TaskPriorityEnum.values()) {
                                     if (priority.toString().equalsIgnoreCase(newPriority)) {
                                         newPriority = priority.toString();
                                         flagPriority = false;
@@ -85,10 +117,10 @@ public class TaskUpdateMenu {
                                 System.out.println("Некорректный статус.");
                             }
                             taskService.changeTaskPriority(id, newPriority);
-                            return;
+                            break;
                         default:
                             System.out.println("Некорректный ввод.");
-                            return;
+                            break;
                     }
                 }
             }
