@@ -1,18 +1,21 @@
 package com.todo.demo.menu;
 
-import ru.todo.model.*;
-import ru.todo.service.UserService;
+import com.todo.demo.model.dto.UserDTO;
+import com.todo.demo.services.UserService;
+import org.springframework.stereotype.Component;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
-import static ru.todo.service.hash.Hash.sha256hex;
-import static ru.todo.service.menu.MainMenu.mainMenu;
-
+@Component
 public class LoginMenu {
-    public static void loginMenu() throws SQLException {
+    private final UserService userService;
+
+    LoginMenu(final UserService userService) {
+        this.userService = userService;
+    }
+
+    public UserDTO user loginMenu(){
         Scanner sc = new Scanner(System.in);
-        UserService userService = UserService.getInstance();
         boolean loggedIn = false;
         while(!loggedIn) {
             System.out.format("Choose:\n1.Login\n2.Register\n");

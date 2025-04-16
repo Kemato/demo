@@ -33,6 +33,7 @@ public class TaskMenu {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         ArrayList<TaskDTO> allTasksByUser = taskService.readAllTaskByUser(user.getId());
         ArrayList<TaskDTO> allTasks = taskService.readAllTasks();
+        ArrayList<TaskDTO> taskDtoArrayWhereAuthor = taskService.readAllTaskByAuthor(user.getId());
         String choice;
         while (true) {
             if(allTasks.isEmpty()) {
@@ -77,13 +78,9 @@ public class TaskMenu {
                             System.out.println("2:Только мои задачи.");
                             String input = scanner.nextLine();
                             if (input.equals("1")) {
-                                for (TaskDTO task : allTasks) {
-                                    printTask(task);
-                                }
+                                allTasks.forEach(this::printTask);
                             } else if (input.equals("2")) {
-                                for (TaskDTO task : allTasksByUser) {
-                                    printTask(task);
-                                }
+                                allTasksByUser.forEach(this::printTask);
                             }
                             else{
                                 System.out.println("Некорректный ввод");
@@ -92,16 +89,14 @@ public class TaskMenu {
                             scanner.nextLine();
                             break;
                         case UPDATE:
-                            ArrayList<TaskDTO> taskDtoArrayWhereAuthor = taskService.readAllTaskByAuthor(user.getId());
                             if (taskDtoArrayWhereAuthor.isEmpty()) {
                                 System.out.println("You have no tasks that you can update.");
                                 break;
                             }
                             System.out.println("Введите порядковый номер задания, которое вы хотите обновить");
-                            for (int i = 0; i < taskDtoArrayWhereAuthor.size(); i++) {
-                                System.out.println(i+1 + ":");
-                                printTask(taskDtoArrayWhereAuthor.get(i));
-                            }
+                            taskDtoArrayWhereAuthor.forEach(taskDTO -> {
+                                System.out.println(taskDTO.getId() + " " + taskDTO.getTitle() + " " + taskDTO.getDescription());
+                            });
                             while (true) {
                                 choice = scanner.nextLine();
                                 if (Long.parseLong(choice) <= taskDtoArrayWhereAuthor.size() && Long.parseLong(choice) > 0) {
@@ -109,7 +104,7 @@ public class TaskMenu {
                                 }
                                 System.out.println("Выберете существующее задание.");
                             }
-                            TaskUpdateMenu.taskUpdateMenu(Integer.parseInt(choice) - 1);
+                            TaskUpdateMenu.taskUpdateMenu(Long.parseLong(choice));
                             break;
 
                         case DELETE:
@@ -118,12 +113,21 @@ public class TaskMenu {
                                 break;
                             }
                             System.out.println("Введите порядковый номер записи, которую вы хотите удалить.");
-                            Long id = Long.parseLong(scanner.nextLine());
+                            taskDtoArrayWhereAuthor.forEach(taskDTO -> {
+                                System.out.println(taskDTO.getId() + " " + taskDTO.getTitle() + " " + taskDTO.getDescription());
+                            });
+                            while (true) {
+                                choice = scanner.nextLine();
+                                if (Long.parseLong(choice) <= taskDtoArrayWhereAuthor.size() && Long.parseLong(choice) > 0) {
+                                    break;
+                                }
+                                System.out.println("Выберете существующее задание.");
+                            }
                             System.out.println("Вы уверены что хотите удалить эту запись?(Yes/No)");
-                            System.out.println(taskService.readTask(id).getName());
+                            System.out.println(taskService.readTask(Long.parseLong(choice)));
 
                             if (scanner.nextLine().equalsIgnoreCase("yes")) {
-                                if (taskService.deleteTask(id)) System.out.println("Успешно удалено.");
+                                if (taskService.deleteTask(Long.parseLong(choice))) System.out.println("Успешно удалено.");
                             } else System.out.println("Удаление отменено.");
                             break;
 
