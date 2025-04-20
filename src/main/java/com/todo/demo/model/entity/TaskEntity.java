@@ -1,29 +1,28 @@
 package com.todo.demo.model.entity;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Table(name = "tasks")
 public class TaskEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
     String title;
     String description;
     String status;
     String priority;
-    String assigned;
-    String author;
-    LocalDate dateCreated;
-    LocalDate dateUpdated;
-    LocalDate deadline;
-    LocalDate dateFinished;
+    Long assigned;
+    Long author;
+    LocalDateTime dateCreated;
+    LocalDateTime dateUpdated;
+    LocalDateTime deadline;
+    LocalDateTime dateFinished;
 }

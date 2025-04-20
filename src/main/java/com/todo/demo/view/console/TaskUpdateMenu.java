@@ -1,19 +1,19 @@
-package com.todo.demo.menu;
+package com.todo.demo.view.console;
 
 import com.todo.demo.model.dto.TaskUpdateDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.enums.MenuUpdateTask;
 import com.todo.demo.model.enums.TaskPriorityEnum;
 import com.todo.demo.model.enums.TaskStatusEnum;
-import com.todo.demo.services.TaskService;
-import com.todo.demo.services.UserService;
+import com.todo.demo.service.TaskService;
+import com.todo.demo.service.UserService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
 
-import static com.todo.demo.component.Choise.capitalizeWords;
+import static com.todo.demo.component.StringUtils.capitalizeWords;
 
 @Component
 public class TaskUpdateMenu {
@@ -26,7 +26,7 @@ public class TaskUpdateMenu {
         this.userService = userService;
     }
 
-    public static void taskUpdateMenu(Long id) {
+    public void taskUpdateMenu(Long id) {
         if (id == null) {
             System.out.println("Task ID cannot be null.");
             return;

@@ -1,4 +1,4 @@
-package com.todo.demo.services;
+package com.todo.demo.service;
 
 import com.todo.demo.interfaces.UserMapper;
 import com.todo.demo.interfaces.UserRepository;
@@ -12,6 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public UserDTO createUser(@NotNull UserCreateDTO userCreateDTO) {
+    public UserDTO createUser(@Valid @NotNull UserCreateDTO userCreateDTO) {
         try {
             if (userCreateDTO.getName() == null || userCreateDTO.getName().trim().isEmpty()) {
                 throw new IllegalArgumentException("Username cannot be null or empty");
@@ -42,7 +43,10 @@ public class UserService {
             }
             UserEntity userEntity = userMapper.toEntity(userCreateDTO);
             userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-            return userMapper.toDTO(userRepository.save(userEntity));
+            userEntity = userRepository.save(userEntity);
+            UserDTO userDTO = userMapper.toDTO(userEntity);
+            System.out.println(userDTO.getId() + " " + userDTO.getName());
+            return userDTO;
         }
         catch (DataAccessException e) {
             throw new RuntimeException("Error creating user" +  e.getMessage(), e);
@@ -153,6 +157,25 @@ public class UserService {
             String oldPassword = userEntity.get().getPassword();
             return passwordEncoder.encode(password).equals(oldPassword);
 
+        }
+        catch (DataAccessException ex){
+            throw new RuntimeException("Error while checking password " + ex.getMessage(), ex);
+        }
+    }
+
+    public UserDTO login(@NotNull String username, @NotNull String password) {
+        try {
+            Optional<UserEntity> userEntityOptional = userRepository.findByName(username);
+            if (userEntityOptional.isPresent()) {
+                UserEntity userEntity = userEntityOptional.get();
+                if (!passwordEncoder.matches(password, userEntity.getPassword())) {
+                    throw new IllegalArgumentException("Wrong password");
+                } else {
+                    return userMapper.toDTO(userEntity);
+                }
+            } else {
+                throw new IllegalArgumentException("User not found");
+            }
         }
         catch (DataAccessException ex){
             throw new RuntimeException("Error while checking password " + ex.getMessage(), ex);

@@ -1,4 +1,4 @@
-package com.todo.demo.services;
+package com.todo.demo.service;
 
 import com.todo.demo.interfaces.TaskMapper;
 import com.todo.demo.interfaces.TaskRepository;
@@ -6,12 +6,13 @@ import com.todo.demo.model.dto.TaskCreateDTO;
 import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.dto.TaskUpdateDTO;
 import com.todo.demo.model.entity.TaskEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -32,6 +33,9 @@ public class TaskService {
                 throw new IllegalArgumentException("Task already exists");
             }
             TaskEntity taskEntity = taskMapper.toEntity(taskCreateDTO);
+            taskEntity.setDateUpdated(LocalDateTime.now());
+            taskEntity.setDateCreated(LocalDateTime.now());
+            taskEntity.setStatus("CREATED");
             return taskMapper.toDTO(taskRepository.save(taskEntity));
         }
         catch(DataAccessException ex){
@@ -74,7 +78,8 @@ public class TaskService {
             ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
             taskRepository.findAll().forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
             if(taskDTOArrayList.isEmpty()){
-                throw new IllegalArgumentException("No tasks found");
+                System.out.println("No tasks found");
+//                throw new IllegalArgumentException("No tasks found");
             }
             return taskDTOArrayList;
         }
@@ -125,7 +130,7 @@ public class TaskService {
 
     public boolean existTask(@NotNull String title) {
         try {
-            return taskRepository.existsByName(title);
+            return taskRepository.existsByTitle(title);
         }
         catch(DataAccessException ex){
             return false;

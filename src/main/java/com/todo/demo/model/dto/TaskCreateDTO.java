@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -27,5 +27,5 @@ public class TaskCreateDTO {
     private String author;
     @NotNull
     @FutureOrPresent
-    private LocalDate deadline;
+    private LocalDateTime deadline;
 }

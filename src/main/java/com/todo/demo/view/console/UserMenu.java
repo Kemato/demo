@@ -1,10 +1,10 @@
-package com.todo.demo.menu;
+package com.todo.demo.view.console;
 
 
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.dto.UserUpdateDTO;
 import com.todo.demo.model.enums.UserMenuEnum;
-import com.todo.demo.services.UserService;
+import com.todo.demo.service.UserService;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
