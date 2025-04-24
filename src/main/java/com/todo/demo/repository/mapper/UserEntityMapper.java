@@ -1,10 +1,9 @@
-package com.todo.demo.interfaces;
-
+package com.todo.demo.repository.mapper;
 
 import com.todo.demo.model.dto.UserCreateDTO;
 import com.todo.demo.model.dto.UserDTO;
-import com.todo.demo.model.entity.UserEntity;
 import com.todo.demo.model.dto.UserUpdateDTO;
+import com.todo.demo.model.entity.UserEntity;
 import org.mapstruct.*;
 
 import javax.validation.constraints.NotNull;
@@ -14,9 +13,7 @@ import javax.validation.constraints.NotNull;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
-public interface UserMapper {
-    @Mapping(source = "name", target = "name")
-    UserDTO toDTO(UserEntity userEntity);
+public interface UserEntityMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "name", target = "name")
@@ -24,9 +21,6 @@ public interface UserMapper {
     UserEntity toEntity(UserCreateDTO userCreateDTO);
 
     default void toEntity(@NotNull UserUpdateDTO userUpdateDTO, @NotNull @MappingTarget UserEntity existingEntity) {
-        if (userUpdateDTO == null) {
-            throw new IllegalArgumentException("userUpdateDTO cannot be null");
-        }
         userUpdateDTO.getName().ifPresent(existingEntity::setName);
         userUpdateDTO.getPassword().ifPresent(existingEntity::setPassword);
     }

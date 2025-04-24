@@ -1,11 +1,12 @@
 package com.todo.demo.service;
 
-import com.todo.demo.interfaces.UserMapper;
-import com.todo.demo.interfaces.UserRepository;
+
 import com.todo.demo.model.dto.UserCreateDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.dto.UserUpdateDTO;
 import com.todo.demo.model.entity.UserEntity;
+import com.todo.demo.repository.UserRepository;
+import com.todo.demo.repository.mapper.UserEntityMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -20,13 +21,13 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
+    private final UserEntityMapper userEntityMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserEntityMapper userEntityMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
+        this.userEntityMapper = userEntityMapper;
     }
 
     public UserDTO createUser(@Valid @NotNull UserCreateDTO userCreateDTO) {
@@ -37,16 +38,13 @@ public class UserService {
             if (userCreateDTO.getPassword() == null || userCreateDTO.getPassword().trim().isEmpty()) {
                 throw new IllegalArgumentException("Password cannot be null or empty");
             }
-            Optional<UserEntity> existingUser = userRepository.findByName(userCreateDTO.getName());
+            Optional<UserDTO> existingUser = userRepository.findByName(userCreateDTO.getName());
             if (existingUser.isPresent()) {
                 throw new IllegalArgumentException("User with name " + userCreateDTO.getName() + " already exists");
             }
-            UserEntity userEntity = userMapper.toEntity(userCreateDTO);
+            UserEntity userEntity = userEntityMapper.toEntity(userCreateDTO);
             userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-            userEntity = userRepository.save(userEntity);
-            UserDTO userDTO = userMapper.toDTO(userEntity);
-            System.out.println(userDTO.getId() + " " + userDTO.getName());
-            return userDTO;
+            return userRepository.save(userEntity);
         }
         catch (DataAccessException e) {
             throw new RuntimeException("Error creating user" +  e.getMessage(), e);
@@ -55,9 +53,9 @@ public class UserService {
 
     public UserDTO readUser(@NotNull String username){
         try {
-            Optional<UserEntity> userEntity = userRepository.findByName(username);
-            if (userEntity.isPresent()) {
-                return userMapper.toDTO(userEntity.get());
+            Optional<UserDTO> userDTO = userRepository.findByName(username);
+            if (userDTO.isPresent()) {
+                return userDTO.get();
             }
             else {
                 throw new IllegalArgumentException("User not found");
@@ -70,9 +68,9 @@ public class UserService {
 
     public  UserDTO readUser(@NotNull Long id){
         try{
-            Optional<UserEntity> userEntity = userRepository.findById(id);
-            if (userEntity.isPresent()) {
-                return userMapper.toDTO(userEntity.get());
+            Optional<UserDTO> userDTO = userRepository.findById(id);
+            if (userDTO.isPresent()) {
+                return userDTO.get();
             }
             else{
                 throw new IllegalArgumentException("User with id " + id + " does not exist");
@@ -83,20 +81,19 @@ public class UserService {
         }
     }
 
-    public UserDTO updateUser(@NotNull UserUpdateDTO userUpdateDTO){
+    public Optional<UserDTO> updateUser(@NotNull UserUpdateDTO userUpdateDTO){
         try {
             if (userUpdateDTO.getId() == null) {
                 throw new IllegalArgumentException("User not found ");
             }
-            Optional<UserEntity> userEntityOptional = userRepository.findById(userUpdateDTO.getId());
+            Optional<UserEntity> userEntityOptional = userRepository.findEntityById(userUpdateDTO.getId());
             if (userEntityOptional.isEmpty()) {
                 throw new IllegalStateException("User with ID " + userUpdateDTO.getId() + " not found");
             }
             UserEntity userEntity = userEntityOptional.get();
-            userMapper.toEntity(userUpdateDTO, userEntity);
+            userEntityMapper.toEntity(userUpdateDTO, userEntity);
             userUpdateDTO.getPassword().ifPresent(password -> userEntity.setPassword(passwordEncoder.encode(password)));
-            UserEntity updatedUserEntity = userRepository.save(userEntity);
-            return userMapper.toDTO(updatedUserEntity);
+            return userRepository.update(userEntity);
         }
         catch (DataAccessException e){
             throw new RuntimeException("Could not update user "+ e.getMessage(), e);
@@ -105,13 +102,7 @@ public class UserService {
 
     public boolean deleteUser(@NotNull Long id){
         try{
-            if (userRepository.existsById(id)) {
-                userRepository.deleteById(id);
-                return true;
-            }
-            else{
-                throw new IllegalArgumentException("User not found");
-            }
+            return userRepository.delete(id);
         }
         catch (DataAccessException ex){
             throw new RuntimeException("Error while deleting user " + ex.getMessage(), ex);
@@ -121,7 +112,7 @@ public class UserService {
     public ArrayList <UserDTO> readAllUsers(){
         try{
             ArrayList<UserDTO> userDTOArrayList = new ArrayList<>();
-            userRepository.findAll().forEach(userEntity -> userDTOArrayList.add(userMapper.toDTO(userEntity)));
+            userRepository.findAll().forEach(userEntity -> userDTOArrayList.add(userEntityMapper.toDTO(userEntity)));
             if(userDTOArrayList.isEmpty()){
                 throw new IllegalArgumentException("No users found");
             }
@@ -171,7 +162,7 @@ public class UserService {
                 if (!passwordEncoder.matches(password, userEntity.getPassword())) {
                     throw new IllegalArgumentException("Wrong password");
                 } else {
-                    return userMapper.toDTO(userEntity);
+                    return userEntityMapper.toDTO(userEntity);
                 }
             } else {
                 throw new IllegalArgumentException("User not found");

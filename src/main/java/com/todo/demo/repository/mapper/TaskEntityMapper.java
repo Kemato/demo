@@ -1,40 +1,29 @@
-package com.todo.demo.interfaces;
+package com.todo.demo.repository.mapper;
 
 import com.todo.demo.model.dto.TaskCreateDTO;
-import com.todo.demo.model.dto.TaskDTO;
-import com.todo.demo.model.entity.TaskEntity;
 import com.todo.demo.model.dto.TaskUpdateDTO;
+import com.todo.demo.model.entity.TaskEntity;
 import org.mapstruct.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Mapper(
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL,
         componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
+        unmappedTargetPolicy = ReportingPolicy.ERROR
 )
-public interface TaskMapper {
+public interface TaskEntityMapper {
 
-
-
-    TaskEntity toEntity(TaskCreateDTO dto);
-
-    TaskDTO toDTO(TaskEntity Task);
+    TaskEntity toEntity(TaskCreateDTO taskCreateDTO);
 
     default void toEntity(@NotNull TaskUpdateDTO taskUpdateDTO, @NotNull @MappingTarget TaskEntity taskEntity) {
-        if(taskUpdateDTO == null){
-            throw new IllegalArgumentException("taskUpdateDTO cannot be null");
-        }
         taskUpdateDTO.getTitle().ifPresent(taskEntity::setTitle);
-        taskUpdateDTO.getDescription().ifPresent(taskEntity::setDescription);
-
-        taskUpdateDTO.getAssigned().ifPresent(taskEntity::setAssigned);
-        taskUpdateDTO.getDeadline().ifPresent(taskEntity::setDeadline);
-
-        taskUpdateDTO.getPriority().ifPresent(taskEntity::setPriority);
         taskUpdateDTO.getStatus().ifPresent(taskEntity::setStatus);
-
+        taskUpdateDTO.getPriority().ifPresent(taskEntity::setPriority);
+        taskUpdateDTO.getAssignee().ifPresent(taskEntity::setAssignee);
+        taskUpdateDTO.getDescription().ifPresent(taskEntity::setDescription);
+        taskUpdateDTO.getDeadline().ifPresent(taskEntity::setDeadline);
         taskUpdateDTO.getDateFinished().ifPresent(taskEntity::setDateFinished);
         taskEntity.setDateUpdated(LocalDateTime.now());
     }

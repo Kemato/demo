@@ -22,9 +22,9 @@ public class TaskCreateDTO {
     @NotBlank
     private String priority;
     @NotBlank
-    private String assignee;
+    private Long assignee;
     @NotBlank
-    private String author;
+    private Long author;
     @NotNull
     @FutureOrPresent
     private LocalDateTime deadline;

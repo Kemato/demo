@@ -19,7 +19,7 @@ public class TaskEntity {
     String description;
     String status;
     String priority;
-    Long assigned;
+    Long assignee;
     Long author;
     LocalDateTime dateCreated;
     LocalDateTime dateUpdated;

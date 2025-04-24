@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,8 +17,8 @@ public class TaskDTO {
     String priority;
     String assignee;
     String author;
-    LocalDate dateCreated;
-    LocalDate dateUpdated;
-    LocalDate deadline;
-    LocalDate dateFinished;
+    LocalDateTime dateCreated;
+    LocalDateTime dateUpdated;
+    LocalDateTime deadline;
+    LocalDateTime dateFinished;
 }

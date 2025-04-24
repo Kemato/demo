@@ -82,7 +82,7 @@ public class TaskUpdateMenu {
                                 String newAssigned = scanner.nextLine();
                                 if (newAssigned.equalsIgnoreCase("back")) break;
                                 if (userArrayList.stream().anyMatch(user -> user.getName().equals(newAssigned))) {
-                                    taskUpdateDTO.setAssigned(Optional.of(newAssigned));
+                                    taskUpdateDTO.setAssignee(Optional.of(newAssigned));
                                     break;
                                 }
                                 System.out.println("Некорректный ввод.");
@@ -140,7 +140,7 @@ public class TaskUpdateMenu {
             }
 
             if (taskUpdateDTO.getTitle().isPresent() || taskUpdateDTO.getDescription().isPresent() ||
-                    taskUpdateDTO.getAssigned().isPresent() || taskUpdateDTO.getStatus().isPresent() ||
+                    taskUpdateDTO.getAssignee().isPresent() || taskUpdateDTO.getStatus().isPresent() ||
                     taskUpdateDTO.getPriority().isPresent()) {
                 taskService.updateTask(taskUpdateDTO);
                 System.out.println("Task updated successfully.");

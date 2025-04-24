@@ -1,11 +1,11 @@
 package com.todo.demo.service;
 
-import com.todo.demo.interfaces.TaskMapper;
-import com.todo.demo.interfaces.TaskRepository;
 import com.todo.demo.model.dto.TaskCreateDTO;
 import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.dto.TaskUpdateDTO;
 import com.todo.demo.model.entity.TaskEntity;
+import com.todo.demo.repository.TaskRepository;
+import com.todo.demo.repository.mapper.TaskEntityMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,11 @@ import java.util.Optional;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final TaskMapper taskMapper;
+    private final TaskEntityMapper taskEntityMapper;
 
-    public TaskService(TaskRepository repository, TaskMapper taskMapper) {
+    public TaskService(TaskRepository repository, TaskEntityMapper taskEntityMapper) {
         this.taskRepository = repository;
-        this.taskMapper = taskMapper;
+        this.taskEntityMapper = taskEntityMapper;
     }
 
     public TaskDTO createTask(@NotNull TaskCreateDTO taskCreateDTO) {
@@ -32,11 +32,11 @@ public class TaskService {
             if (exitingTask.isPresent()) {
                 throw new IllegalArgumentException("Task already exists");
             }
-            TaskEntity taskEntity = taskMapper.toEntity(taskCreateDTO);
+            TaskEntity taskEntity = taskEntityMapper.toEntity(taskCreateDTO);
             taskEntity.setDateUpdated(LocalDateTime.now());
             taskEntity.setDateCreated(LocalDateTime.now());
             taskEntity.setStatus("CREATED");
-            return taskMapper.toDTO(taskRepository.save(taskEntity));
+            return taskEntityMapper.toDTO(taskRepository.save(taskEntity));
         }
         catch(DataAccessException ex){
             throw new RuntimeException("Error creating task" + ex.getMessage(), ex);
@@ -47,7 +47,7 @@ public class TaskService {
         try{
             Optional<TaskEntity> exitingTask = taskRepository.findById(id);
             if (exitingTask.isPresent()) {
-                return taskMapper.toDTO(exitingTask.get());
+                return taskEntityMapper.toDTO(exitingTask.get());
             }
             else{
                 throw new IllegalArgumentException("Task does not exist");
@@ -62,7 +62,7 @@ public class TaskService {
         try{
             Optional<TaskEntity> exitingTask = taskRepository.findByTitle(title);
             if (exitingTask.isPresent()) {
-                return taskMapper.toDTO(exitingTask.get());
+                return taskEntityMapper.toDTO(exitingTask.get());
             }
             else{
                 throw new IllegalArgumentException("Task does not exist");
@@ -76,7 +76,7 @@ public class TaskService {
     public ArrayList<TaskDTO> readAllTasks() {
         try{
             ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
-            taskRepository.findAll().forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
+            taskRepository.findAll().forEach(taskEntity -> taskDTOArrayList.add(taskEntityMapper.toDTO(taskEntity)));
             if(taskDTOArrayList.isEmpty()){
                 System.out.println("No tasks found");
 //                throw new IllegalArgumentException("No tasks found");
@@ -110,9 +110,9 @@ public class TaskService {
                 throw new IllegalArgumentException("Task does not exist");
             }
             TaskEntity taskEntity = taskEntityOptional.get();
-            taskMapper.toEntity(taskUpdateDTO, taskEntity);
+            taskEntityMapper.toEntity(taskUpdateDTO, taskEntity);
             TaskEntity updatedTaskEntity = taskRepository.save(taskEntity);
-            return taskMapper.toDTO(updatedTaskEntity);
+            return taskEntityMapper.toDTO(updatedTaskEntity);
         }
         catch(DataAccessException ex){
             throw new RuntimeException("Could not update task" + ex.getMessage(), ex);
@@ -140,7 +140,7 @@ public class TaskService {
     public ArrayList<TaskDTO> readAllTaskByUser(@NotNull Long userId) {
         try{
             ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
-            taskRepository.findAllByAssigned(userId).forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
+            taskRepository.findAllByAssigned(userId).forEach(taskEntity -> taskDTOArrayList.add(taskEntityMapper.toDTO(taskEntity)));
             return taskDTOArrayList;
         }
         catch(DataAccessException ex){
@@ -151,7 +151,7 @@ public class TaskService {
     public ArrayList<TaskDTO> readAllTaskByAuthor(@NotNull Long userId) {
         try{
             ArrayList <TaskDTO>  taskDTOArrayList = new ArrayList<>();
-            taskRepository.findAllByAuthor(userId).forEach(taskEntity -> taskDTOArrayList.add(taskMapper.toDTO(taskEntity)));
+            taskRepository.findAllByAuthor(userId).forEach(taskEntity -> taskDTOArrayList.add(taskEntityMapper.toDTO(taskEntity)));
             return taskDTOArrayList;
         }
         catch(DataAccessException ex){
