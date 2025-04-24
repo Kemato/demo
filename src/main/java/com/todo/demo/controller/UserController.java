@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -43,8 +44,8 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         userUpdateDTO.setId(id);
-        UserDTO user = userService.updateUser(userUpdateDTO);
-        return ResponseEntity.ok(user);
+        Optional<UserDTO> user = userService.updateUser(userUpdateDTO);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

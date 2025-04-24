@@ -68,15 +68,30 @@ public class TaskRepository {
     }
 
     @Transactional
+    public Optional<TaskEntity> findEntityById(Long id) {
+        String sql = sqlQueryToTaskDTO + "WHERE t.id = :id";
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, TaskEntity.class));
+    }
+
+    @Transactional
+    public Optional<TaskDTO> findByTitle(String title) {
+        String sql = sqlQueryToTaskDTO + "WHERE t.title = :title";
+        SqlParameterSource params = new MapSqlParameterSource("title", title);
+        List<TaskDTO> tasks = jdbcTemplate.query(sql, params, taskDTORowMapper);
+        return tasks.isEmpty() ? Optional.empty() : Optional.of(tasks.getFirst());
+    }
+
+    @Transactional
     public List<TaskDTO> findAll() {
         return jdbcTemplate.query(sqlQueryToTaskDTO, taskDTORowMapper);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         String sql = "DELETE FROM tasks WHERE id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        jdbcTemplate.update(sql, params);
+        return jdbcTemplate.update(sql, params) > 0;
     }
 
     @Transactional

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static com.todo.demo.component.StringUtils.capitalizeWords;
@@ -42,7 +43,7 @@ public class Choice {
         }
     }
 
-    public String choiceAssigned() {
+    public Long choiceAssigned() {
         ArrayList<UserDTO> userList = userService.readAllUsers();
         while (true) {
             System.out.println("Select user to assign task to:");
@@ -53,13 +54,14 @@ public class Choice {
                 System.out.println("Input cannot be empty.");
                 continue;
             }
-            try {
-                if (userList.stream().anyMatch(user -> user.getName().equals(input))) {
-                    return input;
-                }
+            Optional<UserDTO> selectedUser = userList.stream()
+                    .filter(user -> user.getName().equalsIgnoreCase(input.trim()))
+                    .findFirst();
+
+            if (selectedUser.isPresent()) {
+                return selectedUser.get().getId(); // Возвращаем ID
+            } else {
                 System.out.println("Invalid username. Please select an existing user.");
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid username.");
             }
         }
     }

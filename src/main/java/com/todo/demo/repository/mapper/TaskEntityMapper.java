@@ -15,6 +15,11 @@ import java.time.LocalDateTime;
 )
 public interface TaskEntityMapper {
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dateCreated", ignore = true)
+    @Mapping(target = "dateUpdated", ignore = true)
+    @Mapping(target = "dateFinished", ignore = true)
+    @Mapping(target = "status", ignore = true)
     TaskEntity toEntity(TaskCreateDTO taskCreateDTO);
 
     default void toEntity(@NotNull TaskUpdateDTO taskUpdateDTO, @NotNull @MappingTarget TaskEntity taskEntity) {

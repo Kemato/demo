@@ -62,6 +62,14 @@ public class UserRepository {
     }
 
     @Transactional
+    public Optional<UserEntity> findEntityByName(String name) {
+        String sql = "SELECT * FROM users WHERE name = :name";
+        SqlParameterSource params = new MapSqlParameterSource("name", name);
+        UserEntity userEntity = jdbcTemplate.queryForObject(sql, params, UserEntity.class);
+        return Optional.ofNullable(userEntity);
+    }
+
+    @Transactional
     public List<UserDTO> findAll() {
         String sql = "SELECT id, name FROM users";
         return jdbcTemplate.query(sql, userDTORowMapper);
@@ -71,7 +79,7 @@ public class UserRepository {
     public boolean delete(Long id) {
         String sql = "delete from users where id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-         return jdbcTemplate.update(sql, params) > 0;
+        return jdbcTemplate.update(sql, params) > 0;
     }
 
     @Transactional

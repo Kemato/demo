@@ -45,43 +45,38 @@ public class UserService {
             UserEntity userEntity = userEntityMapper.toEntity(userCreateDTO);
             userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
             return userRepository.save(userEntity);
-        }
-        catch (DataAccessException e) {
-            throw new RuntimeException("Error creating user" +  e.getMessage(), e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error creating user" + e.getMessage(), e);
         }
     }
 
-    public UserDTO readUser(@NotNull String username){
+    public UserDTO readUser(@NotNull String username) {
         try {
             Optional<UserDTO> userDTO = userRepository.findByName(username);
             if (userDTO.isPresent()) {
                 return userDTO.get();
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("User not found");
             }
-        }
-        catch (DataAccessException e){
+        } catch (DataAccessException e) {
             throw new RuntimeException("Error reading user " + e.getMessage(), e);
         }
     }
 
-    public  UserDTO readUser(@NotNull Long id){
-        try{
+    public UserDTO readUser(@NotNull Long id) {
+        try {
             Optional<UserDTO> userDTO = userRepository.findById(id);
             if (userDTO.isPresent()) {
                 return userDTO.get();
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("User with id " + id + " does not exist");
             }
-        }
-        catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Error while finding user " + ex.getMessage(), ex);
         }
     }
 
-    public Optional<UserDTO> updateUser(@NotNull UserUpdateDTO userUpdateDTO){
+    public Optional<UserDTO> updateUser(@NotNull UserUpdateDTO userUpdateDTO) {
         try {
             if (userUpdateDTO.getId() == null) {
                 throw new IllegalArgumentException("User not found ");
@@ -94,81 +89,55 @@ public class UserService {
             userEntityMapper.toEntity(userUpdateDTO, userEntity);
             userUpdateDTO.getPassword().ifPresent(password -> userEntity.setPassword(passwordEncoder.encode(password)));
             return userRepository.update(userEntity);
-        }
-        catch (DataAccessException e){
-            throw new RuntimeException("Could not update user "+ e.getMessage(), e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Could not update user " + e.getMessage(), e);
         }
     }
 
-    public boolean deleteUser(@NotNull Long id){
-        try{
+    public boolean deleteUser(@NotNull Long id) {
+        try {
             return userRepository.delete(id);
-        }
-        catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Error while deleting user " + ex.getMessage(), ex);
         }
     }
 
-    public ArrayList <UserDTO> readAllUsers(){
-        try{
-            ArrayList<UserDTO> userDTOArrayList = new ArrayList<>();
-            userRepository.findAll().forEach(userEntity -> userDTOArrayList.add(userEntityMapper.toDTO(userEntity)));
-            if(userDTOArrayList.isEmpty()){
+    public ArrayList<UserDTO> readAllUsers() {
+        try {
+            ArrayList<UserDTO> userDTOArrayList = new ArrayList<>(userRepository.findAll());
+            if (userDTOArrayList.isEmpty()) {
                 throw new IllegalArgumentException("No users found");
             }
             return userDTOArrayList;
-        }
-        catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Error while finding users " + ex.getMessage(), ex);
         }
     }
 
-    public boolean existsUser(@NotNull Long id){
+    public boolean checkPassword(@NotNull String password, @NotNull Long id) {
         try {
-            return userRepository.existsById(id);
-        }
-        catch (DataAccessException ex){
-            throw new RuntimeException("Error while finding user " + ex.getMessage(), ex);
-        }
-    }
-
-    public boolean existsUser(@NotNull String username){
-        try{
-            return userRepository.existsByName(username);
-        }
-        catch (DataAccessException ex){
-            throw new RuntimeException("Error while finding user " + ex.getMessage(), ex);
-        }
-    }
-
-    public boolean checkPassword(@NotNull String password, @NotNull Long id){
-        try{
-            Optional <UserEntity> userEntity = userRepository.findById(id);
-            if(userEntity.isEmpty())throw new IllegalArgumentException("User with id " + id + " does not exist");
-            String oldPassword = userEntity.get().getPassword();
-            return passwordEncoder.encode(password).equals(oldPassword);
-
-        }
-        catch (DataAccessException ex){
+            Optional<UserEntity> userEntity = userRepository.findEntityById(id);
+            if (userEntity.isEmpty()) throw new IllegalArgumentException("User with id " + id + " does not exist");
+            return passwordEncoder.matches(password, userEntity.get().getPassword());
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Error while checking password " + ex.getMessage(), ex);
         }
     }
 
     public UserDTO login(@NotNull String username, @NotNull String password) {
         try {
-            Optional<UserEntity> userEntityOptional = userRepository.findByName(username);
+            Optional<UserEntity> userEntityOptional = userRepository.findEntityByName(username);
             if (userEntityOptional.isPresent()) {
                 UserEntity userEntity = userEntityOptional.get();
                 if (!passwordEncoder.matches(password, userEntity.getPassword())) {
                     throw new IllegalArgumentException("Wrong password");
                 } else {
-                    return userEntityMapper.toDTO(userEntity);
+                    return userRepository.findById(userEntity.getId()).orElseThrow(() -> new IllegalArgumentException("User with id " + userEntity.getId() + " not found"));
                 }
             } else {
                 throw new IllegalArgumentException("User not found");
             }
-        }
-        catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             throw new RuntimeException("Error while checking password " + ex.getMessage(), ex);
         }
     }

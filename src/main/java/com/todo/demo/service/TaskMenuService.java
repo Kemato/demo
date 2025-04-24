@@ -71,7 +71,7 @@ public class TaskMenuService {
             switch (menu) {
                 case CREATE -> {
                     TaskCreateDTO taskCreateDTO = promptTaskCreateDTO(user);
-                    taskCreateDTO.setAuthor(user.getName());
+                    taskCreateDTO.setAuthor(user.getId());
                     taskService.createTask(taskCreateDTO);
                     System.out.println("New task created!");
                 }

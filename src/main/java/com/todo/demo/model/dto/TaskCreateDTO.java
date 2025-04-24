@@ -18,8 +18,6 @@ public class TaskCreateDTO {
     @NotBlank
     private String description;
     @NotBlank
-    private String status;
-    @NotBlank
     private String priority;
     @NotBlank
     private Long assignee;
