@@ -158,7 +158,7 @@ public class TaskMenuService {
         if (input.equals("1")) {
             return taskService.readAllTasks();
         } else if (input.equals("2")) {
-            return taskService.readAllTaskByUser(user.getId());
+            return taskService.readAllTaskByAssignee(user.getId());
         } else {
             System.out.println("Invalid input. Showing no tasks.");
             return new ArrayList<>();

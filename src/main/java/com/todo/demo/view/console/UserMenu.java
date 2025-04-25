@@ -50,7 +50,15 @@ public class UserMenu {
                                         break;
                                     }
                                     updateDTO.setName(Optional.of(scanner.nextLine()));
-                                    user = userService.updateUser(updateDTO);
+                                    Optional<UserDTO> updatedUser = userService.updateUser(updateDTO);
+                                    if (updatedUser.isPresent()) {
+                                        System.out.println("User updated");
+                                        user = updatedUser.get();
+                                        break;
+                                    }
+                                    else{
+                                        System.out.println("User not updated");
+                                    }
                                     break;
                                 case "password":
                                     System.out.println("Enter old password:");

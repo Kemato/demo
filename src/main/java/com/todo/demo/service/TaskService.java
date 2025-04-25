@@ -83,7 +83,7 @@ public class TaskService {
         }
     }
 
-    public TaskDTO updateTask(@NotNull TaskUpdateDTO taskUpdateDTO) {
+    public Optional<TaskDTO> updateTask(@NotNull TaskUpdateDTO taskUpdateDTO) {
         try {
             Optional<TaskEntity> taskEntityOptional = taskRepository.findEntityById(taskUpdateDTO.getId());
             if (taskEntityOptional.isEmpty()) {
@@ -91,7 +91,7 @@ public class TaskService {
             }
             TaskEntity taskEntity = taskEntityOptional.get();
             taskEntityMapper.toEntity(taskUpdateDTO, taskEntity);
-            return taskRepository.save(taskEntity);
+            return taskRepository.update(taskEntity);
         } catch (DataAccessException ex) {
             throw new RuntimeException("Could not update task" + ex.getMessage(), ex);
         }

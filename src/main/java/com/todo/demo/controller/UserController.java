@@ -25,6 +25,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDTO>> getUsers() {
         List<UserDTO> users = userService.readAllUsers();
+        if (users.isEmpty())return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         return ResponseEntity.ok(users);
     }
 
@@ -50,7 +51,6 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return userService.deleteUser(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

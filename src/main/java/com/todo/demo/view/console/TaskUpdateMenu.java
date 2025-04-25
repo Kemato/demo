@@ -81,12 +81,17 @@ public class TaskUpdateMenu {
                             while (true) {
                                 String newAssigned = scanner.nextLine();
                                 if (newAssigned.equalsIgnoreCase("back")) break;
-                                if (userArrayList.stream().anyMatch(user -> user.getName().equals(newAssigned))) {
-                                    taskUpdateDTO.setAssignee(Optional.of(newAssigned));
+
+                                Optional<UserDTO> selectedUser = userArrayList.stream()
+                                        .filter(user -> user.getName().equals(newAssigned)).findFirst();
+                                if (selectedUser.isPresent()) {
+                                    taskUpdateDTO.setAssignee(Optional.of(selectedUser.get().getId()));
                                     break;
                                 }
-                                System.out.println("Некорректный ввод.");
-                                System.out.println("Введите имя существующего пользователя или 'back', чтобы вернуться.");
+                                else {
+                                    System.out.println("Некорректный ввод.");
+                                    System.out.println("Введите имя существующего пользователя или 'back', чтобы вернуться.");
+                                }
                             }
                             break;
 

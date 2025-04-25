@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/task")
@@ -45,14 +46,13 @@ public class TaskController {
 //    @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @Valid @RequestBody TaskUpdateDTO taskUpdateDTO) {
         taskUpdateDTO.setId(id);
-        TaskDTO updatedTask = taskService.updateTask(taskUpdateDTO);
-        return ResponseEntity.ok(updatedTask);
+        Optional<TaskDTO> task = taskService.updateTask(taskUpdateDTO);
+        return task.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+        return taskService.deleteTask(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
