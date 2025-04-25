@@ -3,6 +3,8 @@ package com.todo.demo.repository;
 import com.todo.demo.model.entity.UserEntity;
 import com.todo.demo.repository.mapper.UserDTORowMapper;
 import com.todo.demo.model.dto.UserDTO;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -65,8 +67,17 @@ public class UserRepository {
     public Optional<UserEntity> findEntityByName(String name) {
         String sql = "SELECT * FROM users WHERE name = :name";
         SqlParameterSource params = new MapSqlParameterSource("name", name);
-        UserEntity userEntity = jdbcTemplate.queryForObject(sql, params, UserEntity.class);
-        return Optional.ofNullable(userEntity);
+
+        try {
+            UserEntity userEntity = jdbcTemplate.queryForObject(
+                    sql,
+                    params,
+                    new BeanPropertyRowMapper<>(UserEntity.class)
+            );
+            return Optional.ofNullable(userEntity);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Transactional
