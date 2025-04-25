@@ -31,7 +31,7 @@ public class UserRepository {
 
     @Transactional
     public UserDTO save(UserEntity userEntity) {
-        String sql = "INSERT INTO users (name, password) VALUES (:username, :password)";
+        String sql = "INSERT INTO users (name, password) VALUES (:name, :password) RETURNING id";
         SqlParameterSource params = new BeanPropertySqlParameterSource(userEntity);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);

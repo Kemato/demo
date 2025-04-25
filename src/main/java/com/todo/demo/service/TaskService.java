@@ -67,7 +67,6 @@ public class TaskService {
             ArrayList<TaskDTO> taskDTOArrayList = new ArrayList<>(taskRepository.findAll());
             if (taskDTOArrayList.isEmpty()) {
                 System.out.println("No tasks found");
-//                throw new IllegalArgumentException("No tasks found");
             }
             return taskDTOArrayList;
         } catch (DataAccessException ex) {
@@ -91,9 +90,10 @@ public class TaskService {
             }
             TaskEntity taskEntity = taskEntityOptional.get();
             taskEntityMapper.toEntity(taskUpdateDTO, taskEntity);
+            taskEntity.setDateUpdated(LocalDateTime.now());
             return taskRepository.update(taskEntity);
         } catch (DataAccessException ex) {
-            throw new RuntimeException("Could not update task" + ex.getMessage(), ex);
+            throw new RuntimeException("Could not update task " + ex.getMessage(), ex);
         }
     }
 
@@ -102,7 +102,7 @@ public class TaskService {
         try {
             return new ArrayList<>(taskRepository.findAllByAssignee(userId));
         } catch (DataAccessException ex) {
-            throw new RuntimeException("Error reading all tasks" + ex.getMessage(), ex);
+            throw new RuntimeException("Error reading all tasks " + ex.getMessage(), ex);
         }
     }
 
@@ -110,7 +110,7 @@ public class TaskService {
         try {
             return new ArrayList<>(taskRepository.findAllByAuthor(userId));
         } catch (DataAccessException ex) {
-            throw new RuntimeException("Error reading all tasks" + ex.getMessage(), ex);
+            throw new RuntimeException("Error reading all tasks " + ex.getMessage(), ex);
         }
     }
 }

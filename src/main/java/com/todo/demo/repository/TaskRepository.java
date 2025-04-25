@@ -3,6 +3,7 @@ package com.todo.demo.repository;
 import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.entity.TaskEntity;
 import com.todo.demo.repository.mapper.TaskDTORowMapper;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -28,12 +29,10 @@ public class TaskRepository {
                     t.id,
                     t.title,
                     t.status,
-                    t.author,
-                    u1.name AS author_name,
+                    u1.name AS author,
                     t.priority,
                     t.deadline,
-                    t.assignee,
-                    u2.name AS assigned_name,
+                    u2.name AS assignee,
                     t.description,
                     t.date_created,
                     t.date_updated,
@@ -51,7 +50,7 @@ public class TaskRepository {
     @Transactional
     public TaskDTO save(TaskEntity taskEntity) {
         String sql = "INSERT INTO tasks (title, description, status, priority, assignee, author, deadline) " +
-                "VALUES (:title, :description, :status, :priority, :assignee, :author, :deadline)";
+                "VALUES (:title, :description, :status, :priority, :assignee, :author, :deadline) RETURNING id";
         SqlParameterSource params = new BeanPropertySqlParameterSource(taskEntity);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);
@@ -69,9 +68,9 @@ public class TaskRepository {
 
     @Transactional
     public Optional<TaskEntity> findEntityById(Long id) {
-        String sql = sqlQueryToTaskDTO + "WHERE t.id = :id";
+        String sql = "SELECT * FROM tasks WHERE id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, TaskEntity.class));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(TaskEntity.class)));
     }
 
     @Transactional
@@ -98,14 +97,14 @@ public class TaskRepository {
     public Optional<TaskDTO> update(TaskEntity taskEntity) {
         String sql = """
                 UPDATE tasks SET
-                title = : title,
-                description =:description,
-                status=: status,
-                priority=: priority,
-                assignee = : assignee,
-                deadline = : deadline,
-                date_updated = :date_updated,
-                date_finished = :date_finished
+                title = :title,
+                description = :description,
+                status = :status,
+                priority = :priority,
+                assignee = :assignee,
+                deadline = :deadline,
+                date_updated = :dateUpdated,
+                date_finished = :dateFinished
                 WHERE id = :id
                 """;
         SqlParameterSource params = new BeanPropertySqlParameterSource(taskEntity);

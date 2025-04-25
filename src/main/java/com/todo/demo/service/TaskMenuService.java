@@ -24,16 +24,14 @@ import java.util.Scanner;
 public class TaskMenuService {
     private static final Logger logger = LoggerFactory.getLogger(TaskMenuService.class);
     private final TaskService taskService;
-    private final UserService userService;
     private final TaskUpdateMenu taskUpdateMenu;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final Scanner scanner;
     private final Choice choice;
 
 @Autowired
-    public TaskMenuService(TaskService taskService, UserService userService, TaskUpdateMenu taskUpdateMenu, Scanner scanner, Choice choice) {
+    public TaskMenuService(TaskService taskService,TaskUpdateMenu taskUpdateMenu, Scanner scanner, Choice choice) {
         this.taskService = taskService;
-        this.userService = userService;
         this.taskUpdateMenu = taskUpdateMenu;
         this.scanner = scanner;
         this.choice = choice;
@@ -135,7 +133,7 @@ public class TaskMenuService {
         taskCreateDTO.setAssignee(choice.choiceAssigned());
         taskCreateDTO.setPriority(choice.choicePriority().name());
         while (true) {
-            System.out.println("Enter deadline in format 'dd/MM/yyyy': ");
+            System.out.println("Enter deadline in format 'dd/MM/yyyy HH:mm': ");
             try {
                 LocalDateTime deadline = LocalDateTime.parse(scanner.nextLine(), formatter);
                 if (deadline.isAfter(LocalDateTime.now())) {
@@ -145,7 +143,7 @@ public class TaskMenuService {
                     System.out.println("Deadline must be in the future.");
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("Invalid date format. Use dd/MM/yyyy.");
+                System.out.println("Invalid date format. Use dd/MM/yyyy HH:mm.");
             }
         }
         return taskCreateDTO;
