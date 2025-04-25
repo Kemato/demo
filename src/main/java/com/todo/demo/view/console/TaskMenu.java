@@ -31,7 +31,13 @@ public class TaskMenu {
                     Task Menu:
                     %s
                     Enter choice: """, taskMenuService.getMenuOptions(hasTasks));
-            String choice = scanner.nextLine();
+            String choice = "";
+            try {
+                choice = scanner.nextLine();
+            }
+            catch (Exception e) {
+                System.out.println("Я упал именно тут");
+            }
             if (choice == null || choice.trim().isEmpty()) {
                 System.out.println("Input cannot be empty.");
                 continue;

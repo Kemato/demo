@@ -20,10 +20,12 @@ public class TaskUpdateMenu {
 
     private final TaskService taskService;
     private final UserService userService;
+    private final Scanner scanner;
 
-    public TaskUpdateMenu(TaskService taskService, UserService userService) {
+    public TaskUpdateMenu(TaskService taskService, UserService userService, Scanner scanner) {
         this.taskService = taskService;
         this.userService = userService;
+        this.scanner = scanner;
     }
 
     public void taskUpdateMenu(Long id) {
@@ -32,7 +34,6 @@ public class TaskUpdateMenu {
             return;
         }
 
-        try (Scanner scanner = new Scanner(System.in)) {
             TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
             taskUpdateDTO.setId(id);
             boolean flag = true;
@@ -151,5 +152,4 @@ public class TaskUpdateMenu {
                 System.out.println("Task updated successfully.");
             }
         }
-    }
 }
