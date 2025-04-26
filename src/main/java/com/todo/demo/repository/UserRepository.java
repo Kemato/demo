@@ -59,7 +59,10 @@ public class UserRepository {
     public Optional<UserEntity> findEntityById(Long id) {
         String sql = "SELECT * FROM users WHERE id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        UserEntity userEntity = jdbcTemplate.queryForObject(sql, params, UserEntity.class);
+        UserEntity userEntity = jdbcTemplate.queryForObject(
+                sql,
+                params,
+                new BeanPropertyRowMapper<>(UserEntity.class));
         return Optional.ofNullable(userEntity);
     }
 
