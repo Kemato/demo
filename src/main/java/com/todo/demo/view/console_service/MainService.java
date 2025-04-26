@@ -1,8 +1,8 @@
-package com.todo.demo.service;
+package com.todo.demo.view.console_service;
 
 import com.todo.demo.model.dto.UserDTO;
-import com.todo.demo.view.console.TaskMenu;
-import com.todo.demo.view.console.UserMenu;
+import com.todo.demo.view.console_view.TaskMenu;
+import com.todo.demo.view.console_view.UserMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

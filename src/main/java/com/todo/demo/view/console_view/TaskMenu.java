@@ -1,10 +1,7 @@
-package com.todo.demo.view.console;
+package com.todo.demo.view.console_view;
 
-import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.dto.UserDTO;
-import com.todo.demo.service.TaskMenuService;
-import com.todo.demo.service.UserService;
-import org.jetbrains.annotations.NotNull;
+import com.todo.demo.view.console_service.TaskMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

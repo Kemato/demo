@@ -1,4 +1,4 @@
-package com.todo.demo.view.console;
+package com.todo.demo.view.console_view;
 
 import com.todo.demo.model.dto.TaskUpdateDTO;
 import com.todo.demo.model.dto.UserDTO;

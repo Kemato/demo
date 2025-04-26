@@ -1,7 +1,7 @@
-package com.todo.demo.view.console;
+package com.todo.demo.view.console_view;
 
 import com.todo.demo.model.dto.UserDTO;
-import com.todo.demo.service.LoginService;
+import com.todo.demo.view.console_service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

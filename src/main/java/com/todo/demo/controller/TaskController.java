@@ -30,10 +30,9 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@RequestParam Long id) {
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
         TaskDTO task = taskService.readTask(id);
-        return ResponseEntity.ok(task);
-    }
+        return task != null ? ResponseEntity.ok(task) : ResponseEntity.notFound().build();    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -1,11 +1,12 @@
-package com.todo.demo.service;
+package com.todo.demo.view.console_service;
 
 import com.todo.demo.model.dto.TaskCreateDTO;
 import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.enums.TaskMenuEnum;
 import com.todo.demo.model.exception.NotFoundException;
-import com.todo.demo.view.console.TaskUpdateMenu;
+import com.todo.demo.service.TaskService;
+import com.todo.demo.view.console_view.TaskUpdateMenu;
 import com.todo.demo.component.Choice;
 
 import org.slf4j.Logger;

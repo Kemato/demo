@@ -1,5 +1,7 @@
 package com.todo.demo.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaskUpdateDTO {
         @NotNull
         private Long id;
@@ -21,6 +24,9 @@ public class TaskUpdateDTO {
         private Optional <String> status = Optional.empty();
         private Optional <String> priority = Optional.empty();
         private Optional <Long> assignee = Optional.empty();
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         private Optional <LocalDateTime> deadline = Optional.empty();
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm", shape = JsonFormat.Shape.STRING)
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         private Optional <LocalDateTime> dateFinished = Optional.empty();
 }

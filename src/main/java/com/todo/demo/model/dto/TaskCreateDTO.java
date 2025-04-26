@@ -1,5 +1,7 @@
 package com.todo.demo.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaskCreateDTO {
     @NotBlank
     private String title;
@@ -27,5 +30,6 @@ public class TaskCreateDTO {
     private Long author;
     @NotNull
     @FutureOrPresent
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime deadline;
 }
