@@ -6,7 +6,7 @@ import com.todo.demo.model.dto.UserUpdateDTO;
 import com.todo.demo.model.entity.UserEntity;
 import org.mapstruct.*;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Mapper(
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL,

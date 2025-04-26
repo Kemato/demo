@@ -1,16 +1,18 @@
 package com.todo.demo.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema
 public class TaskUpdateDTO {
         @NotNull
         private Long id;

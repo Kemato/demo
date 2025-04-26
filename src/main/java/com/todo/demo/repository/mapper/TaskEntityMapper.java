@@ -5,7 +5,7 @@ import com.todo.demo.model.dto.TaskUpdateDTO;
 import com.todo.demo.model.entity.TaskEntity;
 import org.mapstruct.*;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Mapper(

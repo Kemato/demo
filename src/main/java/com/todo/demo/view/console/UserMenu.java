@@ -4,6 +4,7 @@ package com.todo.demo.view.console;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.dto.UserUpdateDTO;
 import com.todo.demo.model.enums.UserMenuEnum;
+import com.todo.demo.model.exception.NotFoundException;
 import com.todo.demo.service.UserService;
 import org.springframework.stereotype.Component;
 
@@ -62,17 +63,21 @@ public class UserMenu {
                                     break;
                                 case "password":
                                     System.out.println("Enter old password:");
-                                    if (userService.checkPassword(scanner.nextLine(), user.getId())) {
-                                        System.out.println("Enter new password:");
-                                        String newPassword = scanner.nextLine();
-                                        System.out.println("Enter new password again:");
-                                        if (newPassword.equals(scanner.nextLine())){
-                                            updateDTO.setPassword(Optional.of(newPassword));
-                                            userService.updateUser(updateDTO);
+                                    try {
+                                        if (userService.checkPassword(scanner.nextLine(), user.getId())) {
+                                            System.out.println("Enter new password:");
+                                            String newPassword = scanner.nextLine();
+                                            System.out.println("Enter new password again:");
+                                            if (newPassword.equals(scanner.nextLine())) {
+                                                updateDTO.setPassword(Optional.of(newPassword));
+                                                userService.updateUser(updateDTO);
+                                            } else System.out.println("Passwords don't match");
                                         }
-                                        else System.out.println("Passwords don't match");
+                                        else System.out.println("Wrong password!");
                                     }
-                                    else System.out.println("Wrong password!");
+                                    catch (NotFoundException e) {
+                                        System.out.println("User not found");
+                                    }
                                     break;
                                 case "back":
                                     return;

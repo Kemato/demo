@@ -5,6 +5,7 @@ import com.todo.demo.model.dto.UserCreateDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.dto.UserUpdateDTO;
 import com.todo.demo.model.entity.UserEntity;
+import com.todo.demo.model.exception.NotFoundException;
 import com.todo.demo.repository.UserRepository;
 import com.todo.demo.repository.mapper.UserEntityMapper;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -56,7 +57,7 @@ public class UserService {
             if (userDTO.isPresent()) {
                 return userDTO.get();
             } else {
-                throw new IllegalArgumentException("User not found");
+                throw new NotFoundException("User not found");
             }
         } catch (DataAccessException e) {
             throw new RuntimeException("Error reading user " + e.getMessage(), e);
@@ -69,7 +70,7 @@ public class UserService {
             if (userDTO.isPresent()) {
                 return userDTO.get();
             } else {
-                throw new IllegalArgumentException("User with id " + id + " does not exist");
+                throw new NotFoundException("User with id " + id + " does not exist");
             }
         } catch (DataAccessException ex) {
             throw new RuntimeException("Error while finding user " + ex.getMessage(), ex);
@@ -106,7 +107,7 @@ public class UserService {
         try {
             ArrayList<UserDTO> userDTOArrayList = new ArrayList<>(userRepository.findAll());
             if (userDTOArrayList.isEmpty()) {
-                throw new IllegalArgumentException("No users found");
+                throw new NotFoundException("No users found");
             }
             return userDTOArrayList;
         } catch (DataAccessException ex) {
@@ -117,7 +118,7 @@ public class UserService {
     public boolean checkPassword(@NotNull String password, @NotNull Long id) {
         try {
             Optional<UserEntity> userEntity = userRepository.findEntityById(id);
-            if (userEntity.isEmpty()) throw new IllegalArgumentException("User with id " + id + " does not exist");
+            if (userEntity.isEmpty()) throw new NotFoundException("User with id " + id + " does not exist");
             return passwordEncoder.matches(password, userEntity.get().getPassword());
         } catch (DataAccessException ex) {
             throw new RuntimeException("Error while checking password " + ex.getMessage(), ex);

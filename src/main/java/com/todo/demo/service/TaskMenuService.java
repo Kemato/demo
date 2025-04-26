@@ -4,6 +4,7 @@ import com.todo.demo.model.dto.TaskCreateDTO;
 import com.todo.demo.model.dto.TaskDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.enums.TaskMenuEnum;
+import com.todo.demo.model.exception.NotFoundException;
 import com.todo.demo.view.console.TaskUpdateMenu;
 import com.todo.demo.component.Choice;
 
@@ -130,8 +131,13 @@ public class TaskMenuService {
         taskCreateDTO.setTitle(scanner.nextLine());
         System.out.println("Enter description: ");
         taskCreateDTO.setDescription(scanner.nextLine());
-        taskCreateDTO.setAssignee(choice.choiceAssigned());
-        taskCreateDTO.setPriority(choice.choicePriority().name());
+        try {
+            taskCreateDTO.setAssignee(choice.choiceAssigned());
+            taskCreateDTO.setPriority(choice.choicePriority().name());
+        }
+        catch (NotFoundException e) {
+            System.out.println("User not found.");
+        }
         while (true) {
             System.out.println("Enter deadline in format 'dd/MM/yyyy HH:mm': ");
             try {
