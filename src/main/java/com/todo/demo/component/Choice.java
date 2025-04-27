@@ -3,12 +3,14 @@ package com.todo.demo.component;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.model.enums.TaskPriorityEnum;
 import com.todo.demo.service.UserService;
-import com.todo.demo.view.console_service.SafePromtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.todo.demo.component.StringUtils.capitalizeWords;
 
@@ -17,13 +19,13 @@ public class Choice {
 
     private final UserService userService;
     private final Scanner scanner;
-    private final SafePromtService safePromtService;
+    private final SupplierComponent supplierComponent;
 
     @Autowired
-    public Choice(UserService userService, Scanner scanner, SafePromtService safePromtService) {
+    public Choice(UserService userService, Scanner scanner, SupplierComponent supplierComponent) {
         this.userService = userService;
         this.scanner = scanner;
-        this.safePromtService = safePromtService;
+        this.supplierComponent = supplierComponent;
     }
 
     public TaskPriorityEnum choicePriority() {
@@ -47,10 +49,20 @@ public class Choice {
 
     public Long choiceAssignee() {
         ArrayList<UserDTO> userList = userService.readAllUsers();
-        for (int i = 0; i < userList.size(); i++) System.out.println(i + 1 + ". " + userList.get(i).getName());
+//        for (int i = 0; i < userList.size(); i++) System.out.println(i + 1 + ". " + userList.get(i).getName());
 
-        return safePromtService.safePrompt(() -> {
-            System.out.println("Please enter the assignee name/number: ");
+        Map<Integer, UserDTO> userMap = IntStream.range(0, userList.size())
+                .boxed()
+                .collect(Collectors.toMap(
+                        i -> i+1,
+                        userList::get
+                ));
+        System.out.println("Please enter the assignee name/number: ");
+
+        userMap.forEach((number, user) -> System.out.println(number + ". " + user.getName()));
+
+
+        return supplierComponent.safePrompt(() -> {
             String input = scanner.nextLine();
 
             if (input == null || input.isBlank()) throw new IllegalArgumentException("Assignee name cannot be empty.");

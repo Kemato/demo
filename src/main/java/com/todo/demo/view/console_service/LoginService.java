@@ -1,5 +1,6 @@
 package com.todo.demo.view.console_service;
 
+import com.todo.demo.component.SupplierComponent;
 import com.todo.demo.model.dto.UserCreateDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.service.UserService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Scanner;
 import java.util.Set;
-import java.util.function.Supplier;
 
 @Service
 public class LoginService {
@@ -20,14 +20,14 @@ public class LoginService {
     private final UserService userService;
     private final Scanner scanner;
     private final Validator validator;
-    private final SafePromtService safePromtService;
+    private final SupplierComponent supplierComponent;
 
     @Autowired
-    public LoginService(UserService userService, Scanner scanner, Validator validator, SafePromtService safePromtService) {
+    public LoginService(UserService userService, Scanner scanner, Validator validator, SupplierComponent supplierComponent) {
         this.userService = userService;
         this.scanner = scanner;
         this.validator = validator;
-        this.safePromtService = safePromtService;
+        this.supplierComponent = supplierComponent;
     }
 
     public UserDTO processCommand(String command) {
@@ -82,7 +82,7 @@ public class LoginService {
     }
 
     private UserCredentials promptCredentials() {
-        return safePromtService.safePrompt(() -> {
+        return supplierComponent.safePrompt(() -> {
             System.out.print("Enter Username: ");
             String name = scanner.nextLine();
             if (name.isBlank() || name.length() < 3) {
