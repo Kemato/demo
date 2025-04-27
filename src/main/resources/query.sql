@@ -1,4 +1,11 @@
-CREATE TABLE tasks (
+delete from users Where length(name) <3
+
+
+
+
+
+
+/*CREATE TABLE tasks (
                        id BIGSERIAL PRIMARY KEY,
                        title VARCHAR(100) NOT NULL,
                        status VARCHAR(50) NOT NULL,
@@ -10,4 +17,4 @@ CREATE TABLE tasks (
                        description TEXT,
                        date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                        date_finished TIMESTAMP
-);
+);*/

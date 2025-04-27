@@ -133,7 +133,7 @@ public class TaskMenuService {
         System.out.println("Enter description: ");
         taskCreateDTO.setDescription(scanner.nextLine());
         try {
-            taskCreateDTO.setAssignee(choice.choiceAssigned());
+            taskCreateDTO.setAssignee(choice.choiceAssignee());
             taskCreateDTO.setPriority(choice.choicePriority().name());
         }
         catch (NotFoundException e) {
