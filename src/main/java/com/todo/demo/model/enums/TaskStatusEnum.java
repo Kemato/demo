@@ -15,5 +15,5 @@ public enum TaskStatusEnum {
     ACTIVE,
     PAUSED,
     CANCELED,
-    COMPLETED;
+    COMPLETED
 }

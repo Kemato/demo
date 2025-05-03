@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StringUtils {
-    public static String capitalizeWords(String input) {
+    public static String capitalizeWords (String input) {
         if (input == null || input.isEmpty()) {
             return input;
         }

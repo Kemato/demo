@@ -28,6 +28,7 @@ public class TodoApplication implements CommandLineRunner {
 				// Если логин успешен, показываем основное меню
 				mainMenu.showMainMenu(user);
 			} else {
+
 				System.out.println("Login failed. Exiting application.");
 			}
 		}

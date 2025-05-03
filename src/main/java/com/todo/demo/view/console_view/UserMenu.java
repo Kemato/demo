@@ -15,14 +15,16 @@ import java.util.Scanner;
 public class UserMenu {
 
     private final UserService userService;
+    private final Scanner scanner;
 
-    public UserMenu(UserService userService) {
+    public UserMenu(UserService userService, Scanner scanner) {
         this.userService = userService;
+        this.scanner = scanner;
     }
 
     public void userMenu(UserDTO user) {
         String choice;
-        Scanner scanner = new Scanner(System.in);
+
         while (true) {
             System.out.println("User menu:");
             for (UserMenuEnum menu : UserMenuEnum.values()) {
@@ -32,37 +34,45 @@ public class UserMenu {
             for (UserMenuEnum menu : UserMenuEnum.values()) {
                 if (menu.toString().equalsIgnoreCase(choice)) {
                     switch (menu) {
-                        case READ:
+                        case READ ->
                             //todo.. протестировать поведение вывода модели, а не поля
-                            System.out.println("Current user " + user);
+                            System.out.printf("""
+                                    Current user:
+                                    Id: %d
+                                    Name: %s
+                                    %n""", user.getId(), user.getName());
 
-                        case UPDATE:
+
+                        case UPDATE -> {
                             UserUpdateDTO updateDTO = new UserUpdateDTO();
                             updateDTO.setId(user.getId());
-                            System.out.println("1.Update name/password?");
-                            System.out.println("To go back input *back*");
+                            System.out.println("""
+                                    Update:
+                                    1. Name
+                                    2. Password
+                                    3. Go back
+                                    """);
                             choice = scanner.nextLine();
-                            switch (choice) {
-                                case "name":
+                            switch (choice.toLowerCase()) {
+                                case "name", "1" -> {
                                     System.out.println("Enter new name:");
                                     String newName = scanner.nextLine();
                                     if (newName == null || newName.trim().isEmpty()) {
                                         System.out.println("Name cannot be empty");
                                         break;
                                     }
-                                    updateDTO.setName(Optional.of(scanner.nextLine()));
+                                    updateDTO.setName(Optional.of(newName));
                                     Optional<UserDTO> updatedUser = userService.updateUser(updateDTO);
                                     if (updatedUser.isPresent()) {
                                         System.out.println("User updated");
                                         user = updatedUser.get();
-                                        break;
-                                    }
-                                    else{
+                                    } else {
                                         System.out.println("User not updated");
                                     }
-                                    break;
-                                case "password":
+                                }
+                                case "password", "2" -> {
                                     System.out.println("Enter old password:");
+
                                     try {
                                         if (userService.checkPassword(scanner.nextLine(), user.getId())) {
                                             System.out.println("Enter new password:");
@@ -72,33 +82,32 @@ public class UserMenu {
                                                 updateDTO.setPassword(Optional.of(newPassword));
                                                 userService.updateUser(updateDTO);
                                             } else System.out.println("Passwords don't match");
-                                        }
-                                        else System.out.println("Wrong password!");
-                                    }
-                                    catch (NotFoundException e) {
+                                        } else System.out.println("Wrong password!");
+                                    } catch (NotFoundException e) {
                                         System.out.println("User not found");
                                     }
-                                    break;
-                                case "back":
+                                }
+                                case "back", "3" -> {
                                     return;
-                                default:
-                                    System.out.println("???");
-                            }
-                            break;
+                                }
 
-                        case DELETE:
+                                default -> System.out.println("???");
+                            }
+                        }
+
+                        case DELETE -> {
                             System.out.println("Are you sure you want to delete the user?(Yes/No):");
-                            if(scanner.nextLine().equalsIgnoreCase("yes")) {
+
+                            if (scanner.nextLine().equalsIgnoreCase("yes")) {
                                 userService.deleteUser(user.getId());
                             }
                             return;
+                        }
 
-                        case BACK:
+                        case BACK -> {
                             return;
-
-                        default:
-                            System.out.println("???");
-                            break;
+                        }
+                        default -> System.out.println("???");
                     }
                 }
             }

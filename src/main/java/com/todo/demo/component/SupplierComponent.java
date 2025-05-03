@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 @Component
 public class SupplierComponent {
     private final Validator validator;
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SupplierComponent.class);
 
 
     SupplierComponent( Validator validator){

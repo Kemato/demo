@@ -85,8 +85,8 @@ public class UserService {
     }
 
     public Optional<UserDTO> updateUser(@NotNull UserUpdateDTO userUpdateDTO) {
-        supplierComponent.validateDto(userUpdateDTO);
         return supplierComponent.handleDatabaseOperation(() -> {
+            supplierComponent.validateDto(userUpdateDTO);
             Optional<UserEntity> userEntityOptional = userRepository.findEntityById(userUpdateDTO.getId());
             if (userEntityOptional.isEmpty()) {
                 logger.warn("User not found with id: {}", userUpdateDTO.getId());

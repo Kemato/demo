@@ -24,7 +24,7 @@ import java.util.Optional;
 public class TaskRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<TaskDTO> taskDTORowMapper;
-    private final String sqlQueryToTaskDTO = """
+    private static final String sqlQueryToTaskDTO = """
                 SELECT
                     t.id,
                     t.title,

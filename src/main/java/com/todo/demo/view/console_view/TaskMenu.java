@@ -25,16 +25,11 @@ public class TaskMenu {
         while (true) {
             boolean hasTasks = taskMenuService.hasTasks();
             System.out.printf("""
-                    Task Menu:
-                    %s
-                    Enter choice: """, taskMenuService.getMenuOptions(hasTasks));
-            String choice = "";
-            try {
-                choice = scanner.nextLine();
-            }
-            catch (Exception e) {
-                System.out.println("Я упал именно тут");
-            }
+                    Task Menu:%n
+                    %s%n
+                    Enter choice:%n
+                    """, taskMenuService.getMenuOptions(hasTasks));
+            String choice = scanner.nextLine();
             if (choice == null || choice.trim().isEmpty()) {
                 System.out.println("Input cannot be empty.");
                 continue;

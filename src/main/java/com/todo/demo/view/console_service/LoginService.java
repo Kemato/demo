@@ -4,29 +4,26 @@ import com.todo.demo.component.SupplierComponent;
 import com.todo.demo.model.dto.UserCreateDTO;
 import com.todo.demo.model.dto.UserDTO;
 import com.todo.demo.service.UserService;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Scanner;
-import java.util.Set;
+
 
 @Service
 public class LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
     private final UserService userService;
     private final Scanner scanner;
-    private final Validator validator;
     private final SupplierComponent supplierComponent;
 
     @Autowired
-    public LoginService(UserService userService, Scanner scanner, Validator validator, SupplierComponent supplierComponent) {
+    public LoginService(UserService userService, Scanner scanner, SupplierComponent supplierComponent) {
         this.userService = userService;
         this.scanner = scanner;
-        this.validator = validator;
         this.supplierComponent = supplierComponent;
     }
 
@@ -51,14 +48,8 @@ public class LoginService {
                     return null;
                 }
                 UserCreateDTO userCreateDTO = new UserCreateDTO(credentials.name(), credentials.password());
-                Set<ConstraintViolation<UserCreateDTO>> violations = validator.validate(userCreateDTO);
-                if (!violations.isEmpty()) {
-                    for (ConstraintViolation<UserCreateDTO> violation : violations) {
-                        System.out.println("Ошибка: " + violation.getMessage());
-                    }
-                    return null;
-                }
                 try {
+                    supplierComponent.validateDto(userCreateDTO);
                     return userService.createUser(userCreateDTO);
                 } catch (IllegalArgumentException e) {
                     logger.warn("Registration failed: {}", e.getMessage(), e);

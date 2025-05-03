@@ -49,7 +49,7 @@ public class TaskUpdateMenu {
                 try {
                     MenuUpdateTask point = MenuUpdateTask.valueOf(choice.toUpperCase());
                     switch (point) {
-                        case TITLE:
+                        case TITLE -> {
                             while (true) {
                                 System.out.println("Введите новое имя:");
                                 String newTitle = scanner.nextLine();
@@ -60,9 +60,9 @@ public class TaskUpdateMenu {
                                 taskUpdateDTO.setTitle(Optional.of(newTitle));
                                 break;
                             }
-                            break;
+                        }
 
-                        case DESCRIPTION:
+                        case DESCRIPTION -> {
                             while (true) {
                                 System.out.println("Введите новое описание:");
                                 String newDescription = scanner.nextLine();
@@ -73,11 +73,12 @@ public class TaskUpdateMenu {
                                 taskUpdateDTO.setDescription(Optional.of(newDescription));
                                 break;
                             }
-                            break;
+                        }
 
-                        case ASSIGNED:
+                        case ASSIGNED -> {
                             ArrayList<UserDTO> userArrayList = userService.readAllUsers();
                             System.out.println("Кому назначить:");
+
                             for (UserDTO user : userArrayList) System.out.println(user.getName());
                             while (true) {
                                 String newAssigned = scanner.nextLine();
@@ -88,15 +89,14 @@ public class TaskUpdateMenu {
                                 if (selectedUser.isPresent()) {
                                     taskUpdateDTO.setAssignee(Optional.of(selectedUser.get().getId()));
                                     break;
-                                }
-                                else {
+                                } else {
                                     System.out.println("Некорректный ввод.");
                                     System.out.println("Введите имя существующего пользователя или 'back', чтобы вернуться.");
                                 }
                             }
-                            break;
+                        }
 
-                        case STATUS:
+                        case STATUS -> {
                             for (TaskStatusEnum status : TaskStatusEnum.values()) {
                                 System.out.println(capitalizeWords(status.toString().toLowerCase()));
                             }
@@ -112,9 +112,9 @@ public class TaskUpdateMenu {
                                     System.out.println("Некорректный ввод. Попробуйте снова, или введите 'back', чтобы вернуться.");
                                 }
                             }
-                            break;
+                        }
 
-                        case PRIORITY:
+                        case PRIORITY -> {
                             for (TaskPriorityEnum priority : TaskPriorityEnum.values()) {
                                 System.out.println(capitalizeWords(priority.toString().toLowerCase()));
                             }
@@ -129,7 +129,7 @@ public class TaskUpdateMenu {
                                     System.out.println("Некорректный ввод. Попробуйте снова, или введите 'back', чтобы вернуться.");
                                 }
                             }
-                            break;
+                        }
                     }
                 } catch (IllegalArgumentException e) {
                     System.out.println("Некорректный ввод.");
